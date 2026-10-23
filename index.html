@@ -109,6 +109,20 @@
   .streetrow input{width:100%;padding:12px 14px;font-size:15px}
   .streetrow button{width:100%}
   #autoRaster,#autoDxf,#btnUndoAuto{display:none!important}
+  .refmk{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--head);font-weight:800;font-size:13px;color:#111;border:2px solid #111;box-shadow:0 2px 0 #111}
+  .refmk.pl{background:#fbbf24}.refmk.mp{background:#4ade80}
+  .tutbox{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:1400;width:min(400px,calc(100vw - 32px));
+    background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 0 #070b0e,0 18px 40px rgba(0,0,0,.55);overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr)}
+  .tutbox.big{width:min(760px,calc(100vw - 32px))}
+  .tuthead{display:flex;align-items:center;gap:8px;padding:8px 10px;background:radial-gradient(140% 160% at 0 0,rgba(139,92,246,.28),transparent 60%)}
+  .tuthead b{flex:1;min-width:0;font-family:var(--head);font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tutbtns{display:flex;gap:6px;flex:none}
+  .tutbtns button{padding:4px 9px!important;min-height:0!important;font-size:13px!important;border-radius:10px!important}
+  #tutCv{display:block;width:100%;aspect-ratio:16/9;background:#f3efe6}
+  .tutcap{display:flex;gap:8px;align-items:flex-start;padding:8px 12px 10px;font-size:13.5px;font-weight:600;line-height:1.4;min-height:48px}
+  .tutcap .mono{color:#a78bfa;font-weight:700;flex:none}
+  .tutbar{height:4px;background:#1f2b35}.tutbar i{display:block;height:100%;width:0;background:#8b5cf6}
+  @media (max-width:760px){.tutbox{bottom:calc(var(--sheet,46vh) + 10px)}}
   .sitem{display:grid;grid-template-columns:84px 1fr auto;gap:6px 8px;align-items:center;padding:8px;border-radius:12px;background:var(--card2)}
   .sitem input{padding:6px 9px;font-size:13px;border-radius:9px}
   .sitem .slbl{font-family:var(--head);font-weight:800;text-align:center;background:var(--sensor);border-color:var(--sensor);color:#fff}
@@ -290,6 +304,7 @@
   <div class="sec">
     <h2><span class="n" style="--c:#3b82f6">1</span><span data-i18n="s1"></span></h2>
     <label class="file"><span data-i18n="upload"></span><input type="file" id="fileImg" accept="image/*,.pdf,.dxf,.dwg"></label>
+    <button class="purple" id="btnTut" data-i18n="tutBtn"></button>
     <div id="loadMsg" class="hint"></div>
 
     <div id="streetBox" class="sub" hidden>
@@ -321,6 +336,8 @@
         <label class="chk"><input type="checkbox" id="freeMode"><span data-i18n="freeMode"></span></label>
       </div>
       <div class="row">
+        <button id="btnRef" class="pri" data-i18n="refBtn"></button>
+        <button id="btnTut2" class="purple" aria-label="Video">🎬</button>
         <button id="btnPlaceView" class="blue" data-i18n="placeAtView"></button>
         <button id="btnLock"></button>
         <button id="btnHideImg"></button>
@@ -496,6 +513,13 @@
     <div class="hint" id="libMsg"></div>
   </div>
 </div>
+<div id="tutBox" class="tutbox" hidden role="dialog" aria-labelledby="tutTitle">
+  <div class="tuthead"><b id="tutTitle" data-i18n="tutTitle"></b>
+    <span class="tutbtns"><button id="tutPlay" class="pri" aria-label="Play"></button><button id="tutRe" class="blue" aria-label="Replay">↺</button><button id="tutBig" aria-label="Resize">⤢</button><button id="tutX" class="danger" aria-label="Close">✕</button></span></div>
+  <canvas id="tutCv" width="640" height="360"></canvas>
+  <div class="tutcap"><span id="tutStep" class="mono"></span><span id="tutCap"></span></div>
+  <div class="tutbar"><i id="tutProg"></i></div>
+</div>
 <div id="modeBar" class="modebar" hidden><span id="modeTxt"></span><span id="modeBtns" style="display:flex;gap:8px;padding:0"></span></div>
 <div id="cropModal" class="modal" hidden>
   <div class="mbox">
@@ -558,7 +582,9 @@ const T={
   s1:'Pelan paip',upload:'📤 Upload pelan · JPG · PNG · PDF · DXF',pdfPage:'Halaman PDF',of:n=>'daripada '+n,
   planHint:'Seret ✥ untuk alih pelan. Tekan ✥ untuk tukar ke mod ⟳ putar, kemudian seret bulatan ⟳ untuk pusing. Seret petak kuning di bucu untuk besar/kecil. Guna ⟲ ⟳ ➖ ➕ untuk laras halus.',
   mbDone:'✔ Siap',mbUndo:'↶ Undo',mbStop:'⏹ Berhenti',mbCancel:'✖ Batal',savedDocs:n=>`Disimpan: Documents/POI-Noise-Logger/${n}`,
-  pinDel:'🗑 Buang pin',tileSen:'📍 Total sensor',tileLeak:'💧 Bocor dijumpai',tileTap:'Tekan untuk senarai',listSen:n=>`📍 Senarai sensor (${n})`,listLeak:n=>`💧 Lokasi bocor dijumpai (${n})`,emptySen:'Belum ada sensor. Tambah di bahagian 2.',emptyLeak:'Belum ada lokasi bocor ditanda.',tapGo:'Pergi ➜',onPipe:'atas paip',
+  pinDel:'🗑 Buang pin',tutBtn:'🎬 Contoh video: laras skala pelan',tutTitle:'🎬 Cara laras drawing ikut skala peta',
+  tutCaps:['Masalah: drawing lebih kecil & senget, tak sama skala dengan peta.','Tekan butang 📐 Laras ikut titik rujukan.','Titik 1: klik simpang jalan pada PELAN.','Klik simpang yang SAMA pada PETA.','Titik 2: klik simpang lain yang JAUH pada PELAN.','Klik simpang yang sama pada PETA.','Pelan dilaras automatik: skala, putaran & kedudukan.','Semak ralat purata, kemudian tekan ✔ Siap.','Siap! Paip kini tepat di atas peta.'],
+  tutUi:{btn:'📐 Laras ikut titik rujukan',p1:'Titik 1: klik pada PELAN',m1:'Titik 1: klik titik SAMA pada PETA',p2:'Titik 2: klik pada PELAN',m2:'Titik 2: klik titik SAMA pada PETA',ok:'✔ Dilaras · ralat 0.4 m',done:'✔ Siap',plan:'PELAN',map:'PETA',tip:'Tip: pilih 2 simpang yang berjauhan'},refBtn:'📐 Laras ikut titik rujukan',refPlan:n=>`Titik ${n}: klik pada PELAN (cth simpang jalan, bucu bangunan).`,refMap:n=>`Titik ${n}: klik titik yang SAMA pada PETA.`,refErr:e=>` ✔ Dilaras · ralat purata ${e} m. Tambah titik lagi atau tekan Siap.`,refNeed:'Perlu sekurang-kurangnya 2 pasang titik.',refNoPlan:'Upload pelan dahulu.',tileSen:'📍 Total sensor',tileLeak:'💧 Bocor dijumpai',tileTap:'Tekan untuk senarai',listSen:n=>`📍 Senarai sensor (${n})`,listLeak:n=>`💧 Lokasi bocor dijumpai (${n})`,emptySen:'Belum ada sensor. Tambah di bahagian 2.',emptyLeak:'Belum ada lokasi bocor ditanda.',tapGo:'Pergi ➜',onPipe:'atas paip',
   cropTitle:'✂️ Pilih kawasan peta',cropHint:'Kotak hijau = bahagian yang digunakan. Tajuk, bingkai, nota & jadual di luar kotak diabaikan. Seret kotak atau petak kuning untuk laraskan.',cropMap:'Kawasan peta',
   cropAuto:'🪄 Auto kesan',cropFull:'⬜ Seluruh halaman',cropText:'Buang teks & label kecil',cropSize:'Saiz teks maks (px)',cropLayers:'Abaikan lapisan tajuk / bingkai / nota',
   cropOk:'✔ Guna kawasan ini',cropSkip:'Guna tanpa pangkas',recrop:'✂️ Pangkas semula',cropFound:'Bingkai & kotak tajuk dikesan.',cropFrame:'Bingkai dikesan.',cropNone:'Tiada bingkai jelas dikesan. Laraskan kotak sendiri.',cropBusy:'Memproses…',
@@ -641,7 +667,9 @@ const T={
   s1:'Pipe plan',upload:'📤 Upload plan · JPG · PNG · PDF · DXF',pdfPage:'PDF page',of:n=>'of '+n,
   planHint:'Drag ✥ to move the plan. Tap ✥ to switch to ⟳ rotate mode, then drag the ⟳ knob to turn it. Drag the yellow corner squares to resize. Use ⟲ ⟳ ➖ ➕ for fine adjustment.',
   mbDone:'✔ Done',mbUndo:'↶ Undo',mbStop:'⏹ Stop',mbCancel:'✖ Cancel',savedDocs:n=>`Saved: Documents/POI-Noise-Logger/${n}`,
-  pinDel:'🗑 Remove pin',tileSen:'📍 Total sensors',tileLeak:'💧 Leaks found',tileTap:'Tap for list',listSen:n=>`📍 Sensor list (${n})`,listLeak:n=>`💧 Leak locations found (${n})`,emptySen:'No sensors yet. Add them in section 2.',emptyLeak:'No leak locations marked yet.',tapGo:'Go ➜',onPipe:'on pipe',
+  pinDel:'🗑 Remove pin',tutBtn:'🎬 Example video: fix plan scale',tutTitle:'🎬 How to fit a drawing to the map scale',
+  tutCaps:['Problem: the drawing is smaller & tilted, not the same scale as the map.','Press 📐 Align with reference points.','Point 1: click a road junction on the PLAN.','Click the SAME junction on the MAP.','Point 2: click another junction FAR away on the PLAN.','Click the same junction on the MAP.','The plan is aligned automatically: scale, rotation & position.','Check the average error, then press ✔ Done.','Done! The pipes now sit exactly on the map.'],
+  tutUi:{btn:'📐 Align with reference points',p1:'Point 1: click on the PLAN',m1:'Point 1: click the SAME point on the MAP',p2:'Point 2: click on the PLAN',m2:'Point 2: click the SAME point on the MAP',ok:'✔ Aligned · error 0.4 m',done:'✔ Done',plan:'PLAN',map:'MAP',tip:'Tip: choose 2 junctions far apart'},refBtn:'📐 Align with reference points',refPlan:n=>`Point ${n}: click on the PLAN (e.g. a road junction, building corner).`,refMap:n=>`Point ${n}: click the SAME point on the MAP.`,refErr:e=>` ✔ Aligned · average error ${e} m. Add more points or press Done.`,refNeed:'At least 2 point pairs are needed.',refNoPlan:'Upload a plan first.',tileSen:'📍 Total sensors',tileLeak:'💧 Leaks found',tileTap:'Tap for list',listSen:n=>`📍 Sensor list (${n})`,listLeak:n=>`💧 Leak locations found (${n})`,emptySen:'No sensors yet. Add them in section 2.',emptyLeak:'No leak locations marked yet.',tapGo:'Go ➜',onPipe:'on pipe',
   cropTitle:'✂️ Select the map area',cropHint:'Green box = the part that is used. Title, border, notes & tables outside the box are ignored. Drag the box or the yellow squares to adjust.',cropMap:'Map area',
   cropAuto:'🪄 Auto detect',cropFull:'⬜ Whole page',cropText:'Remove small text & labels',cropSize:'Max text size (px)',cropLayers:'Ignore title / border / notes layers',
   cropOk:'✔ Use this area',cropSkip:'Use without cropping',recrop:'✂️ Crop again',cropFound:'Border & title block detected.',cropFrame:'Border detected.',cropNone:'No clear border detected. Adjust the box yourself.',cropBusy:'Processing…',
@@ -905,7 +933,9 @@ function setMode(m){
   map.getContainer().style.cursor=m?'crosshair':'';
   const mb=$('modeBar');mb.hidden=!m;
   if(m){$('modeBtns').innerHTML=m==='pipe'?`<button class="blue" data-mb="undo">${t('mbUndo')}</button><button class="pri" data-mb="done">${t('mbDone')}</button>`
-      :m==='sensor'?`<button class="pri" data-mb="stop">${t('mbStop')}</button>`:`<button class="danger" data-mb="stop">${t('mbCancel')}</button>`;
+      :m==='sensor'?`<button class="pri" data-mb="stop">${t('mbStop')}</button>`
+      :m==='ref'?`<button class="blue" data-mb="refundo">${t('mbUndo')}</button><button class="pri" data-mb="refdone">${t('mbDone')}</button><button class="danger" data-mb="refcancel">${t('mbCancel')}</button>`
+      :`<button class="danger" data-mb="stop">${t('mbCancel')}</button>`;
     if(isMobile())setSheet('peek');}
   status();
 }
@@ -913,6 +943,7 @@ function status(){
   if(mode==='pipe')setStatusText(t('stDraw',draft.length,draft.length>1?fmt(pipeLen({pts:draft})):''),true);
   else if(mode==='sensor')setStatusText(t('stSensor',letter(S.nextLbl)),true);
   else if(mode==='pick')setStatusText(t('stPick'),true);
+  else if(mode==='ref')setStatusText(refStatus(),true);
   else setStatusText(t('stIdle',S.pipes.length,S.sensors.length,S.leaks.length));
 }
 
@@ -1069,6 +1100,7 @@ map.on('click',e=>{
     S.sensors.push({id:uid(),label:nextLabel(),name:'',lat:on?sn.lat:ll.lat,lng:on?sn.lng:ll.lng,free:!on});save();draw();
   }
   else if(mode==='pick')pickColour(ll);
+  else if(mode==='ref')refClick(e.latlng);
 });
 map.on('dblclick',()=>{if(mode==='pipe')finishPipe();});
 $('btnPipe').onclick=()=>{draft=[];setMode('pipe');};
@@ -1090,7 +1122,7 @@ $('btnRoads').onclick=async()=>{
     const m=along(p.pts,pipeLen(p)/2);p.road=await roadAt(m.lat,m.lng);save();renderSide();await sleep(250);}
   status();
 };
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(mode==='pipe')finishPipe();else setMode(null);}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(mode==='pipe')finishPipe();else if(mode==='ref')refEnd(false);else setMode(null);}});
 
 /* ================= plan overlay ================= */
 let imgEl=null,handles=[],mvHandle=null;
@@ -1180,7 +1212,7 @@ function knobPos(){const k=corners(),o=cen(),m={x:(k[0].x+k[1].x)/2,y:(k[0].y+k[
   return{x:m.x+v.x/L0*48,y:m.y+v.y/L0*48};}
 function syncHandles(skip){
   if(!IMG)return;const k=corners();
-  cornerMk.forEach((m,i)=>{if(m!==skip)m.setLatLng(toLL(IMG.free?[k[0],k[1],k[3]][i]:k[i]));});
+  const cl=cornerMk.length===3?[k[0],k[1],k[3]]:k;cornerMk.forEach((m,i)=>{if(m!==skip&&cl[i])m.setLatLng(toLL(cl[i]));});
   if(mvHandle&&mvHandle!==skip)mvHandle.setLatLng(centre());
   if(rotKnob&&rotKnob!==skip)rotKnob.setLatLng(toLL(knobPos()));
   if(rotLine){const kp=rotKnob?lp(rotKnob.getLatLng()):knobPos();rotLine.setLatLngs([centre(),toLL(kp)]);}
@@ -2122,7 +2154,7 @@ $('sheetBtn').onclick=e=>{e.stopPropagation();setSheet(sheetState==='full'?'peek
     setSheet(h<vh*.22?'peek':h<vh*.7?'half':'full');};
   bar.addEventListener('pointerup',end);bar.addEventListener('pointercancel',end);})();
 $('modeBar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.mb;
-  if(a==='undo'){draft.pop();draw();}else if(a==='done')finishPipe();else setMode(null);});
+  if(a==='undo'){draft.pop();draw();}else if(a==='done')finishPipe();else if(a==='refundo')refUndo();else if(a==='refdone')refEnd(true);else if(a==='refcancel')refEnd(false);else setMode(null);});
 setSheet('half');
 const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
 async function saveBlob(blob,name){
@@ -2148,7 +2180,7 @@ if(NATIVE){
     if(!$('simModal').hidden){$('simClose').click();return;}
     if(!$('cropModal').hidden){$('cropX').click();return;}
     if($('libDrawer').classList.contains('open')){libOpenDrawer(false);return;}
-    if(mode){if(mode==='pipe')finishPipe();else setMode(null);return;}
+    if(mode){if(mode==='pipe')finishPipe();else if(mode==='ref')refEnd(false);else setMode(null);return;}
     if(isMobile()&&sheetState==='full'){setSheet('half');return;}
     App.exitApp();
   });
@@ -2191,6 +2223,137 @@ function dropPin(lat,lng,name){
 document.addEventListener('click',e=>{const b=e.target.closest('[data-pinx]');if(b&&placePin){map.removeLayer(placePin);placePin=null;}});
 document.addEventListener('click',e=>{const b=e.target.closest('.leaflet-popup [data-copy]');if(!b)return;const v=b.dataset.copy;
   (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>{b.textContent=t('copied');}).catch(()=>{});});
+
+/* ================= tutorial video (animated) ================= */
+const TUT={t:0,play:false,raf:0,last:0,DUR:34};
+const tutC=$('tutCv').getContext('2d');
+const TW=640,TH=360,TJ1={x:150,y:105},TJ2={x:500,y:262};
+const TCH=[0,3.5,6,9.5,13,16.5,19.5,24.5,28.5];
+const tclamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),tseg=(t,a,b)=>tclamp((t-a)/(b-a)),tease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+// plan transform: world -> screen, interpolated from wrong (k=0) to correct (k=1)
+function tutT(k){const s=.66+(1-.66)*k,r=(-14*(1-k))*Math.PI/180,dx=70*(1-k),dy=28*(1-k),cx=320,cy=185;
+  return p=>{const x=p.x-cx,y=p.y-cy;return{x:cx+dx+s*(x*Math.cos(r)-y*Math.sin(r)),y:cy+dy+s*(x*Math.sin(r)+y*Math.cos(r))};};}
+function tutRoads(g,f,edge,fill,w){
+  const R=[[[0,105],[640,105]],[[0,262],[640,262]],[[150,0],[150,360]],[[500,0],[500,360]],[[320,105],[320,262]],[[0,330],[260,200]]];
+  [[edge,w+6],[fill,w]].forEach(([c,lw])=>{g.strokeStyle=c;g.lineWidth=lw;g.lineCap='round';R.forEach(([a,b])=>{const A=f({x:a[0],y:a[1]}),B=f({x:b[0],y:b[1]});g.beginPath();g.moveTo(A.x,A.y);g.lineTo(B.x,B.y);g.stroke();});});
+}
+function tutMap(g){
+  g.fillStyle='#f3efe6';g.fillRect(0,0,TW,TH);
+  g.fillStyle='#e4ddcf';[[20,20,110,70],[175,20,125,70],[340,20,140,70],[525,20,100,70],[20,125,110,115],[175,125,125,115],[340,125,140,115],[525,125,100,115],[175,285,300,60],[525,285,100,60]].forEach(b=>g.fillRect(...b));
+  g.fillStyle='#cfe8c4';g.fillRect(345,130,130,105);
+  tutRoads(g,p=>p,'#d0c7b6','#ffffff',16);
+  g.fillStyle='#7a6f5d';g.font='600 11px Nunito,sans-serif';g.fillText('Jalan Sultan Yusuf',20,100);g.fillText('Jalan Dato Sagor',20,257);
+}
+function tutPlan(g,k,alpha){
+  const f=tutT(k);g.save();g.globalAlpha=alpha;
+  const c=[{x:10,y:10},{x:630,y:10},{x:630,y:350},{x:10,y:350}].map(f);
+  g.fillStyle='rgba(255,255,255,.35)';g.strokeStyle='#2563eb';g.lineWidth=1.5;g.beginPath();c.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.closePath();g.fill();g.stroke();
+  tutRoads(g,f,'rgba(40,40,40,.55)','rgba(255,255,255,0)',1);
+  const pipe=[[{x:0,y:112},{x:640,y:112}],[{x:157,y:0},{x:157,y:360}],[{x:157,y:255},{x:640,y:255}],[{x:493,y:112},{x:493,y:360}]];
+  g.strokeStyle='#1d4ed8';g.lineWidth=3.5;pipe.forEach(([a,b])=>{const A=f(a),B=f(b);g.beginPath();g.moveTo(A.x,A.y);g.lineTo(B.x,B.y);g.stroke();});
+  g.restore();
+}
+function tutMark(g,p,n,col){g.save();g.fillStyle=col;g.strokeStyle='#111';g.lineWidth=2;g.beginPath();g.arc(p.x,p.y,11,0,7);g.fill();g.stroke();
+  g.fillStyle='#111';g.font='800 12px "Baloo 2",Nunito,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(n,p.x,p.y+1);g.restore();}
+function tutPill(g,x,y,txt,bg,fg){g.save();g.font='800 12.5px "Baloo 2",Nunito,sans-serif';const w=g.measureText(txt).width+22;
+  g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.roundRect(x,y+3,w,26,10);g.fill();g.fillStyle=bg;g.beginPath();g.roundRect(x,y,w,26,10);g.fill();
+  g.fillStyle=fg;g.textBaseline='middle';g.fillText(txt,x+11,y+13.5);g.restore();return w;}
+function tutCursor(g,p,click){g.save();if(click>0&&click<1){g.strokeStyle=`rgba(139,92,246,${1-click})`;g.lineWidth=3;g.beginPath();g.arc(p.x,p.y,8+click*22,0,7);g.stroke();}
+  g.translate(p.x,p.y);g.fillStyle='#fff';g.strokeStyle='#111';g.lineWidth=1.5;g.beginPath();g.moveTo(0,0);g.lineTo(0,18);g.lineTo(5,14);g.lineTo(9,22);g.lineTo(12,20);g.lineTo(8,13);g.lineTo(14,13);g.closePath();g.fill();g.stroke();g.restore();}
+function tutRender(t){
+  const g=tutC,U=tt('tutUi');g.setTransform(1,0,0,1,0,0);
+  tutMap(g);
+  const k=tease(tseg(t,19.5,23));tutPlan(g,k,.95);
+  const f0=tutT(0),f=tutT(k);
+  // labels for plan vs map
+  if(t<19.5){const pc=f0({x:320,y:20});tutPill(g,pc.x-28,pc.y-6,U.plan,'#2563eb','#fff');}
+  // markers
+  const P1=f(TJ1),P2=f(TJ2);
+  if(t>=7.6)tutMark(g,P1,'1','#fbbf24');
+  if(t>=11.2){tutMark(g,TJ1,'1','#4ade80');if(k<.98){g.save();g.setLineDash([4,5]);g.strokeStyle='#eab308';g.lineWidth=2;g.beginPath();g.moveTo(P1.x,P1.y);g.lineTo(TJ1.x,TJ1.y);g.stroke();g.restore();}}
+  if(t>=14.6)tutMark(g,P2,'2','#fbbf24');
+  if(t>=18.1){tutMark(g,TJ2,'2','#4ade80');if(k<.98){g.save();g.setLineDash([4,5]);g.strokeStyle='#eab308';g.lineWidth=2;g.beginPath();g.moveTo(P2.x,P2.y);g.lineTo(TJ2.x,TJ2.y);g.stroke();g.restore();}}
+  // fake UI
+  if(t<6.2)tutPill(g,12,322,U.btn,t>=5&&t<6.2?'#fde047':'#22c55e',t>=5&&t<6.2?'#1f1700':'#fff');
+  const mb=t>=6&&t<9.5?U.p1:t>=9.5&&t<13?U.m1:t>=13&&t<16.5?U.p2:t>=16.5&&t<19.5?U.m2:t>=19.5&&t<28.5?U.ok:'';
+  if(mb){g.save();g.font='700 12px Nunito,sans-serif';const w=g.measureText(mb).width+(t>=19.5?110:24);const x=(TW-w)/2;
+    g.fillStyle='rgba(16,23,29,.95)';g.beginPath();g.roundRect(x,10,w,34,12);g.fill();g.fillStyle='#fcd34d';g.textBaseline='middle';g.fillText(mb,x+12,27.5);g.restore();
+    if(t>=19.5)tutPill(g,x+w-92,14,U.done,t>=27&&t<28.5?'#fde047':'#22c55e',t>=27&&t<28.5?'#1f1700':'#fff');}
+  if(t>=28.5){const a=tseg(t,28.5,29.2);g.save();g.globalAlpha=a;g.fillStyle='rgba(22,163,74,.95)';g.beginPath();g.roundRect(170,150,300,46,23);g.fill();
+    g.fillStyle='#fff';g.font='800 17px "Baloo 2",Nunito,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('✔ '+U.done.replace('✔ ',''),320,174);g.restore();
+    g.save();g.globalAlpha=a;tutPill(g,12,322,'💡 '+U.tip,'#1d2a35','#fde047');g.restore();}
+  // cursor path
+  const btnPos={x:90,y:335},doneX=(()=>{g.font='700 12px Nunito,sans-serif';const w=g.measureText(U.ok).width+110;return(TW-w)/2+w-50;})();
+  const way=[[0,{x:560,y:300}],[3.5,{x:560,y:300}],[5,btnPos],[6.2,btnPos],[7.4,f0(TJ1)],[9.5,f0(TJ1)],[11,TJ1],[13,TJ1],[14.4,f0(TJ2)],[16.5,f0(TJ2)],[17.9,TJ2],[25.5,TJ2],[27,{x:doneX,y:27}],[34,{x:doneX,y:27}]];
+  let cp=way[0][1];for(let i=0;i<way.length-1;i++){const [ta,a]=way[i],[tb,b]=way[i+1];if(t>=ta&&t<=tb){const u=tease(tseg(t,ta,tb));cp={x:a.x+(b.x-a.x)*u,y:a.y+(b.y-a.y)*u};break;}if(t>tb)cp=b;}
+  let click=0;[5.2,7.6,11.2,14.6,18.1,27.2].forEach(tc=>{if(t>=tc&&t<tc+.6)click=(t-tc)/.6;});
+  if(t<30)tutCursor(g,cp,click);
+  // intro mismatch hint
+  if(t<3.5){const a=1-tseg(t,3,3.5);g.save();g.globalAlpha=a;g.strokeStyle='#ef4444';g.lineWidth=3;g.setLineDash([6,5]);g.beginPath();g.arc(TJ1.x,TJ1.y,20,0,7);g.stroke();g.beginPath();g.arc(f0(TJ1).x,f0(TJ1).y,20,0,7);g.stroke();g.restore();}
+  // captions & progress
+  let i=0;TCH.forEach((v,j)=>{if(t>=v)i=j;});$('tutStep').textContent=`${i+1}/${TCH.length}`;$('tutCap').textContent=tt('tutCaps')[i];
+  $('tutProg').style.width=(t/TUT.DUR*100)+'%';
+}
+function tutLoop(ts){const dt=TUT.last?Math.min(.1,(ts-TUT.last)/1000):0;TUT.last=ts;
+  if(TUT.play){TUT.t+=dt;if(TUT.t>=TUT.DUR){TUT.t=0;}}
+  tutRender(TUT.t);$('tutPlay').textContent=TUT.play?'❚❚':'▶';
+  if(!$('tutBox').hidden)TUT.raf=requestAnimationFrame(tutLoop);}
+function tutOpen(){$('tutBox').hidden=false;TUT.t=0;TUT.play=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;TUT.last=0;cancelAnimationFrame(TUT.raf);TUT.raf=requestAnimationFrame(tutLoop);}
+$('btnTut').onclick=tutOpen;$('btnTut2').onclick=tutOpen;
+$('tutPlay').onclick=()=>{TUT.play=!TUT.play;};
+$('tutRe').onclick=()=>{TUT.t=0;TUT.play=true;};
+$('tutBig').onclick=()=>$('tutBox').classList.toggle('big');
+$('tutX').onclick=()=>{$('tutBox').hidden=true;cancelAnimationFrame(TUT.raf);};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('tutBox').hidden&&$('svModal').hidden&&$('simModal').hidden)$('tutX').click();});
+
+/* ================= align plan with reference point pairs ================= */
+let REF=null;const refLayer=L.layerGroup().addTo(map);
+function pixToLayer(x,y){const k=corners();return{x:k[0].x+(k[1].x-k[0].x)*x/IMG.w+(k[3].x-k[0].x)*y/IMG.h,y:k[0].y+(k[1].y-k[0].y)*x/IMG.w+(k[3].y-k[0].y)*y/IMG.h};}
+function layerToPix(q){const k=corners(),ax=(k[1].x-k[0].x)/IMG.w,ay=(k[1].y-k[0].y)/IMG.w,bx=(k[3].x-k[0].x)/IMG.h,by=(k[3].y-k[0].y)/IMG.h,dx=q.x-k[0].x,dy=q.y-k[0].y,det=ax*by-ay*bx;
+  return{x:(dx*by-dy*bx)/det,y:(ax*dy-ay*dx)/det};}
+function refStatus(){if(!REF)return'';const n=REF.pairs.filter(p=>p.ll).length,cur=REF.pairs.length;
+  const base=REF.stage==='map'?t('refMap',cur):t('refPlan',cur+1);return base+(REF.err!=null?t('refErr',REF.err.toFixed(1)):'');}
+function refFit(){
+  const P=REF.pairs.filter(p=>p.ll);REF.err=null;if(P.length<2){IMG.c=REF.prevC.map(c=>c.slice());placeImg();syncHandles();return;}
+  IMG.c=REF.prevC.map(c=>c.slice());
+  const src=P.map(p=>p.px),dst=P.map(p=>lp(p.ll)),n=P.length;let f;
+  if(n>=3&&IMG.free){ // least-squares affine
+    const solve=(vals)=>{let A=[[0,0,0],[0,0,0],[0,0,0]],B=[0,0,0];src.forEach((s2,i)=>{const r=[s2.x,s2.y,1];for(let a=0;a<3;a++){B[a]+=r[a]*vals[i];for(let b=0;b<3;b++)A[a][b]+=r[a]*r[b];}});
+      const M=A.map((r,i)=>[...r,B[i]]);for(let c=0;c<3;c++){let pv=c;for(let r=c+1;r<3;r++)if(Math.abs(M[r][c])>Math.abs(M[pv][c]))pv=r;[M[c],M[pv]]=[M[pv],M[c]];
+        for(let r=0;r<3;r++)if(r!==c){const q=M[r][c]/M[c][c];for(let k=c;k<4;k++)M[r][k]-=q*M[c][k];}}return[M[0][3]/M[0][0],M[1][3]/M[1][1],M[2][3]/M[2][2]];};
+    const X=solve(dst.map(d=>d.x)),Y=solve(dst.map(d=>d.y));f=(x,y)=>({x:X[0]*x+X[1]*y+X[2],y:Y[0]*x+Y[1]*y+Y[2]});
+  }else{ // least-squares similarity (scale + rotation + shift)
+    const mx=src.reduce((a,p)=>a+p.x,0)/n,my=src.reduce((a,p)=>a+p.y,0)/n,Mx=dst.reduce((a,p)=>a+p.x,0)/n,My=dst.reduce((a,p)=>a+p.y,0)/n;
+    let num1=0,num2=0,den=0;src.forEach((s2,i)=>{const xc=s2.x-mx,yc=s2.y-my,Xc=dst[i].x-Mx,Yc=dst[i].y-My;num1+=xc*Xc+yc*Yc;num2+=xc*Yc-yc*Xc;den+=xc*xc+yc*yc;});
+    const a=num1/den,b=num2/den;f=(x,y)=>({x:a*(x-mx)-b*(y-my)+Mx,y:b*(x-mx)+a*(y-my)+My});
+  }
+  setCorners([f(0,0),f(IMG.w,0),f(IMG.w,IMG.h),f(0,IMG.h)]);
+  REF.err=P.reduce((a,p)=>{const q=f(p.px.x,p.px.y),ll=toLL(q);return a+d2({lat:ll[0],lng:ll[1]},{lat:p.ll[0],lng:p.ll[1]});},0)/n;
+  placeImg();syncHandles();
+}
+function refDraw(){
+  refLayer.clearLayers();if(!REF)return;
+  REF.pairs.forEach((p,i)=>{const pl=toLL(pixToLayer(p.px.x,p.px.y));
+    L.marker(pl,{icon:div('refmk pl',String(i+1),26),interactive:false,zIndexOffset:2500}).addTo(refLayer);
+    if(p.ll){L.marker(p.ll,{icon:div('refmk mp',String(i+1),26),interactive:false,zIndexOffset:2600}).addTo(refLayer);
+      L.polyline([pl,p.ll],{color:'#fde047',weight:2,dashArray:'4 5',interactive:false}).addTo(refLayer);}});
+}
+function refClick(latlng){
+  if(!IMG){setStatusText(t('refNoPlan'),true);return;}
+  if(REF.stage==='plan'){REF.pairs.push({px:layerToPix(lp([latlng.lat,latlng.lng])),ll:null});REF.stage='map';}
+  else{REF.pairs[REF.pairs.length-1].ll=[latlng.lat,latlng.lng];REF.stage='plan';refFit();}
+  refDraw();status();
+}
+function refUndo(){if(!REF||!REF.pairs.length)return;const last=REF.pairs[REF.pairs.length-1];
+  if(last.ll){last.ll=null;REF.stage='map';}else{REF.pairs.pop();REF.stage='plan';}refFit();refDraw();status();}
+function refEnd(keep){
+  if(REF){if(keep&&REF.pairs.filter(p=>p.ll).length<2&&REF.pairs.length){setStatusText(t('refNeed'),true);return;}
+    if(!keep){IMG.c=REF.prevC.map(c=>c.slice());placeImg();}saveImg();}
+  REF=null;refLayer.clearLayers();setMode(null);drawHandles();
+}
+$('btnRef').onclick=()=>{if(!IMG)return;REF={pairs:[],stage:'plan',prevC:IMG.c.map(c=>c.slice()),err:null};
+  if(IMG.hidden){IMG.hidden=false;placeImg();}if(IMG.op>0.75){IMG.op=0.65;$('op').value=0.65;placeImg();}
+  setMode('ref');};
 
 /* ================= rearranged workflow helpers ================= */
 const tt=(...a)=>t(...a);
