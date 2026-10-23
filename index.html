@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="description" content="Peta POI noise logger: pelan paip, sensor dan lokasi kebocoran.">
+<meta name="description" content="Point Of Interest (POI): pelan paip, sensor dan lokasi kebocoran.">
 <meta name="theme-color" content="#0b1014">
-<title>POI Noise Logger</title>
+<title>Point Of Interest (POI)</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
@@ -82,6 +82,33 @@
   @keyframes pinDrop{0%{transform:translateY(-40px);opacity:0}100%{transform:none;opacity:1}}
   .leaflet-tooltip.tpinlbl{font-family:var(--head);font-weight:700;font-size:13px;background:#ef4444;color:#fff;border:2px solid #fff;border-radius:10px;padding:3px 9px}
   @media (prefers-reduced-motion:reduce){.tpin{animation:none}}
+  .tilesec{padding:12px}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{display:grid;justify-items:start;gap:2px;padding:12px 14px!important;border-radius:18px!important;text-align:left;white-space:normal}
+  .tile .tlab{font-size:13.5px;font-weight:700;opacity:.92}
+  .tile b{font-family:var(--head);font-size:40px;line-height:1;font-weight:800;font-variant-numeric:tabular-nums}
+  .tile .tsub{font-family:var(--sans);font-size:11.5px;font-weight:600;opacity:.8}
+  .tile.tsen{--t:#a78bfa;--b:#7c3aed;--s:#4c1d95}
+  .tile.tleak{--t:#f87171;--b:#dc2626;--s:#7f1d1d}
+  .tile.tleak.has b{animation:cntPulse 1.6s ease-in-out infinite}
+  @keyframes cntPulse{50%{text-shadow:0 0 14px #fff}}
+  #map{position:relative}
+  .locbtn{position:absolute;left:10px;top:84px;z-index:1000;width:40px;height:40px;padding:0!important;border-radius:12px!important;font-size:18px}
+  .plist{display:grid;gap:8px;max-height:62vh;overflow:auto;padding:2px}
+  .prow{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;text-align:left;padding:10px 12px!important;border-radius:14px!important;white-space:normal;--t:#1d2a35;--b:#16212a;--s:#070b0e}
+  .prow .pk{grid-row:1/3;min-width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-family:var(--head);font-size:17px;font-weight:800;color:#fff;padding:0 8px}
+  .prow .pn{font-family:var(--head);font-size:16px}
+  .prow .pc{font-family:var(--mono);font-size:13.5px;color:#d8e2e0;grid-column:2}
+  .prow .pr{font-family:var(--sans);font-size:12.5px;color:var(--muted);grid-column:2/4;font-weight:600}
+  .prow .pgo{grid-row:1/3;grid-column:3;font-size:13px;color:#93c5fd}
+  .pempty{color:var(--muted);padding:12px}
+  @media (prefers-reduced-motion:reduce){.tile.tleak.has b{animation:none}}
+  @media (max-width:760px){.locbtn{top:calc(84px + env(safe-area-inset-top,0px))}.tile b{font-size:34px}}
+  header h1{font-size:19px;white-space:nowrap}
+  .streetrow{display:grid;gap:8px}
+  .streetrow input{width:100%;padding:12px 14px;font-size:15px}
+  .streetrow button{width:100%}
+  #autoRaster,#autoDxf,#btnUndoAuto{display:none!important}
   .sitem{display:grid;grid-template-columns:84px 1fr auto;gap:6px 8px;align-items:center;padding:8px;border-radius:12px;background:var(--card2)}
   .sitem input{padding:6px 9px;font-size:13px;border-radius:9px}
   .sitem .slbl{font-family:var(--head);font-weight:800;text-align:center;background:var(--sensor);border-color:var(--sensor);color:#fff}
@@ -245,19 +272,18 @@
   <div class="sheetbar" id="sheetBar"><span class="sstat" id="sheetStat"></span><span class="grip"></span><button id="sheetBtn" class="blue" aria-label="Panel">⬆</button></div>
   <header>
     <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
-      <div class="brand"><div class="logo" aria-hidden="true">💧</div><div><h1>POI Noise Logger</h1><span class="by">by ProKuiz</span></div></div>
+      <div class="brand"><div class="logo" aria-hidden="true">💧</div><div><h1>Point Of Interest (POI)</h1></div></div>
       <div class="seg lang"><button id="lgBM">BM</button><button id="lgEN">EN</button></div>
     </div>
     <p class="hint" data-i18n="subtitle"></p>
   </header>
 
-  <div class="sec">
-    <div id="status" class="status"></div>
-    <div class="row">
-      <input id="q" data-i18n-ph="searchPh">
-      <button id="btnSearch" class="blue" data-i18n="search"></button>
-      <button id="btnMe" class="purple" data-i18n-title="myLoc">📍</button>
+  <div class="sec tilesec">
+    <div class="tiles">
+      <button class="tile tsen" id="tileSen"><span class="tlab" data-i18n="tileSen"></span><b id="cntSen">0</b><span class="tsub" data-i18n="tileTap"></span></button>
+      <button class="tile tleak" id="tileLeak"><span class="tlab" data-i18n="tileLeak"></span><b id="cntLeak">0</b><span class="tsub" data-i18n="tileTap"></span></button>
     </div>
+    <div id="status" class="status" hidden></div>
   </div>
 
   <!-- 1 PLAN + PIPES -->
@@ -270,7 +296,7 @@
       <h3 data-i18n="streetsH"></h3>
       <p class="hint" id="streetMsg"></p>
       <div id="streetChips" class="row"></div>
-      <div class="row">
+      <div class="streetrow">
         <input id="streetQ" data-i18n-ph="streetSearchPh">
         <button class="blue" id="btnStreetGo" data-i18n="goPlace"></button>
       </div>
@@ -285,6 +311,8 @@
       <div id="hueBox" hidden style="display:grid;gap:6px">
         <span class="hint" data-i18n="hueHint"></span>
         <div id="hueChips" class="row"></div>
+        <label class="lab"><span><span data-i18n="vivid"></span> <span class="mono" id="vividTxt"></span></span><input type="range" id="vivid" min="0" max="100" step="5" value="80"></label>
+        <label class="chk"><input type="checkbox" id="thick" checked><span data-i18n="thick"></span></label>
       </div>
       <div class="lab"><span data-i18n="opacity"></span><input type="range" id="op" min="0.1" max="1" step="0.05"></div>
       <div class="row fine">
@@ -408,6 +436,14 @@
       <button id="btnFit" class="blue" data-i18n="fit"></button>
       <button id="btnClear" class="danger" data-i18n="clear"></button>
     </div>
+    <details class="set">
+      <summary data-i18n="gSet"></summary>
+      <div style="display:grid;gap:8px">
+        <p class="hint" data-i18n="gHint"></p>
+        <div class="row"><input id="gKey" data-i18n-ph="gKeyPh" autocomplete="off"><button class="blue" id="gKeySave" data-i18n="gSave"></button></div>
+        <div class="hint" id="gKeyMsg"></div>
+      </div>
+    </details>
     <div id="confirmClear" hidden class="row">
       <span class="err" data-i18n="clearQ"></span>
       <button id="yesClear" class="danger" data-i18n="yes"></button><button id="noClear" data-i18n="no"></button>
@@ -415,6 +451,7 @@
   </div>
 </aside>
 <div id="map"></div>
+<button id="btnMe" class="locbtn purple" data-i18n-title="myLoc" aria-label="📍">📍</button>
 </div>
 <button id="libTab" class="libtab" aria-controls="libDrawer">📚 <span data-i18n="libTab"></span></button>
 <div id="libDrawer" class="drawer" aria-hidden="true">
@@ -516,23 +553,23 @@ const T={
   proj:'Projek',projPh:'Nama projek, cth Taman Bukit Jalan 3',saveProj:'💾 Simpan projek',openProj:'📂 Buka projek',
   saveHint:'Simpan projek sebagai satu fail .html. Double-click fail itu nanti untuk sambung kerja dengan semua data.',
   unsaved:'● Ada perubahan belum disimpan ke fail.',savedAs:f=>`Disimpan sebagai ${f}. Buka fail ini terus lain kali.`,
-  opened:f=>`Projek dibuka: ${f}`,openFail:'Fail ini bukan fail projek POI Noise Logger.',leaveWarn:'Ada perubahan belum disimpan.',
+  opened:f=>`Projek dibuka: ${f}`,openFail:'Fail ini bukan fail projek POI.',leaveWarn:'Ada perubahan belum disimpan.',
   searchPh:'Cari tempat atau lat, lng',search:'🔍 Cari',myLoc:'Lokasi saya',
   s1:'Pelan paip',upload:'📤 Upload pelan · JPG · PNG · PDF · DXF',pdfPage:'Halaman PDF',of:n=>'daripada '+n,
   planHint:'Seret ✥ untuk alih pelan. Tekan ✥ untuk tukar ke mod ⟳ putar, kemudian seret bulatan ⟳ untuk pusing. Seret petak kuning di bucu untuk besar/kecil. Guna ⟲ ⟳ ➖ ➕ untuk laras halus.',
   mbDone:'✔ Siap',mbUndo:'↶ Undo',mbStop:'⏹ Berhenti',mbCancel:'✖ Batal',savedDocs:n=>`Disimpan: Documents/POI-Noise-Logger/${n}`,
-  pinDel:'🗑 Buang pin',
+  pinDel:'🗑 Buang pin',tileSen:'📍 Total sensor',tileLeak:'💧 Bocor dijumpai',tileTap:'Tekan untuk senarai',listSen:n=>`📍 Senarai sensor (${n})`,listLeak:n=>`💧 Lokasi bocor dijumpai (${n})`,emptySen:'Belum ada sensor. Tambah di bahagian 2.',emptyLeak:'Belum ada lokasi bocor ditanda.',tapGo:'Pergi ➜',onPipe:'atas paip',
   cropTitle:'✂️ Pilih kawasan peta',cropHint:'Kotak hijau = bahagian yang digunakan. Tajuk, bingkai, nota & jadual di luar kotak diabaikan. Seret kotak atau petak kuning untuk laraskan.',cropMap:'Kawasan peta',
   cropAuto:'🪄 Auto kesan',cropFull:'⬜ Seluruh halaman',cropText:'Buang teks & label kecil',cropSize:'Saiz teks maks (px)',cropLayers:'Abaikan lapisan tajuk / bingkai / nota',
   cropOk:'✔ Guna kawasan ini',cropSkip:'Guna tanpa pangkas',recrop:'✂️ Pangkas semula',cropFound:'Bingkai & kotak tajuk dikesan.',cropFrame:'Bingkai dikesan.',cropNone:'Tiada bingkai jelas dikesan. Laraskan kotak sendiri.',cropBusy:'Memproses…',
-  viewH:'Paparan pelan',viewFull:'Penuh',viewNoBg:'Tanpa latar',viewPipes:'Paip sahaja',hueHint:'Warna garisan dalam pelan. Tekan untuk sorok/tunjuk (cth sorok merah sempadan, kekalkan biru paip).',freeMode:'Laras bebas (herot)',viewBusy:'Memproses paparan…',
+  viewH:'Paparan pelan',viewFull:'Penuh',viewNoBg:'Tanpa latar',viewPipes:'Paip sahaja',hueHint:'Warna garisan dalam pelan. Tekan untuk sorok/tunjuk (cth sorok merah sempadan, kekalkan biru paip).',freeMode:'Laras bebas (herot)',viewBusy:'Memproses paparan…',vivid:'✨ Terang warna',thick:'Garisan tebal',
   opacity:'Kelutsinaran',lock:'🔒 Kunci kedudukan',unlock:'🔓 Ubah kedudukan',hide:'🙈 Sembunyi',show:'👁 Tunjuk',delPlan:'🗑 Buang pelan',
   autoRH:'Kesan paip ikut warna',autoRHint:'Tekan butang di bawah, kemudian klik tepat pada garisan paip dalam pelan. Semua garisan dengan warna yang sama akan ditukar jadi paip. Ulang untuk setiap warna paip.',
   pick:'🎯 Ambil warna dari pelan',colTol:'Toleransi warna',pipeName:'Nama paip',pipeNamePh:'cth Paip utama 300mm',detect:'⚡ Kesan paip',
   dxfH:'Lapisan (layer) dalam DXF',dxfHint:'Tanda lapisan yang mengandungi paip. Lapisan bernama PIPE, PAIP, WATER atau MAIN sudah ditanda.',dxfConvert:'⚡ Tukar lapisan ditanda jadi paip',
   undoAuto:'↶ Buang hasil kesan terakhir',
   manualPipes:'✏️ Lukis paip manual',hidePipes:'🙈 Sorok paip',showPipes:'👁 Tunjuk paip',placeAtView:'🎯 Letak pelan di skrin',
-  streetsH:'🛣 Nama jalan dalam drawing',streetSearchPh:'Taip nama jalan / taman',goPlace:'📍 Pergi & letak pelan',streetsFound:n=>`${n} nama dikesan. Tekan untuk pergi ke lokasi & letak pelan di situ.`,ocrBusy:'Membaca teks dalam drawing (OCR)…',ocrNone:'Tiada nama jalan dikesan. Taip nama jalan untuk pergi ke lokasi.',ocrFail:'Tidak dapat membaca teks drawing. Taip nama jalan untuk pergi ke lokasi.',flying:n=>`📍 Pin diletak di ${n}. Seret ✥ pelan ke pin, tekan ✥ untuk putar, seret bucu untuk saiz.`,geoNone:n=>`“${n}” tidak dijumpai. Cuba nama lain atau tambah nama taman/bandar.`,
+  streetsH:'🛣 Nama jalan dalam drawing',streetSearchPh:'Jalan, taman, bangunan, tempat…',goPlace:'📍 Pergi & letak pelan',streetsFound:n=>`${n} nama dikesan. Tekan untuk pergi ke lokasi & letak pelan di situ.`,ocrBusy:'Membaca teks dalam drawing (OCR)…',ocrNone:'Tiada nama jalan dikesan. Taip nama jalan untuk pergi ke lokasi.',ocrFail:'Tidak dapat membaca teks drawing. Taip nama jalan untuk pergi ke lokasi.',flying:n=>`📍 Pin diletak di ${n}. Seret ✥ pelan ke pin, tekan ✥ untuk putar, seret bucu untuk saiz.`,geoNone:n=>`“${n}” tidak dijumpai. Cuba nama lain atau tambah nama taman/bandar.`,
   addSensorH:'➕ Tambah sensor ikut koordinat',labelPh:'Nama',coordPh:'Koordinat: 3.073300, 101.519140',addSensor:'➕ Tambah',coordBad:'Format koordinat: lat, lng (cth 3.073300, 101.519140)',straight:' (garis lurus)',leakCalcH:'💧 Kira lokasi bocor',
   saveLib:'📚 Simpan ke library',openLib:'📂 Buka library',goSensor:'Pergi',
   s2:'Sensor & lokasi bocor',s2Hint:'Lukis sendiri: tekan "Lukis paip", klik setiap selekoh, kemudian "Siap" atau double-click. Paip yang hujungnya berdekatan (≤ 2 m) dikira bersambung.',
@@ -566,8 +603,9 @@ const T={
   detectNone:'Tiada garisan dengan warna itu. Cuba klik tepat pada garisan atau naikkan toleransi.',detectFail:'Pengesanan gagal untuk pelan ini.',removed:n=>`${n} paip dibuang.`,
   notFoundLoc:'Lokasi tidak dijumpai.',searchFail:'Carian gagal. Cuba masukkan koordinat lat, lng.',locFail:'Tidak dapat lokasi. Benarkan akses lokasi dalam browser.',
   dxfReload:'Untuk kesan lapisan DXF semula selepas refresh, upload fail DXF sekali lagi.',
-  layers:{hyb:'Satelit + nama tempat',sat:'Satelit',st:'Peta jalan',topo:'Topo'},
-  waBtn:'💬 WhatsApp',waMsg:o=>`🚨 *SASARAN BOCOR*${o.proj?' · '+o.proj:''}\n${o.road?'📍 '+o.road+'\n':''}🧭 Koordinat: ${o.ll}\n📏 ${o.dist} dari sensor ${o.from} ke arah ${o.to} (± ${o.tol} m)\n🗺 Google Maps: ${o.gm}\n_POI Noise Logger by ProKuiz_`,
+  layers:{groad:'Google Maps',gsat:'Google Satelit',hyb:'Satelit + nama tempat',sat:'Satelit',osm:'Peta jalan (OSM)'},
+  gSet:'⚙️ Google Maps (pilihan)',gHint:'Isi API key Google dengan "Map Tiles API" diaktifkan untuk pilihan peta Google Maps & Google Satelit (butang lapisan di kanan atas peta).',gKeyPh:'Google Maps API key',gSave:'💾 Simpan key',gOk:'✅ Google Maps aktif. Pilih di butang lapisan peta.',gFail:'❌ Key tidak sah atau Map Tiles API belum diaktifkan.',gNone:'Tiada key: guna Satelit Esri atau Peta jalan (OSM).',
+  waBtn:'💬 WhatsApp',waMsg:o=>`🚨 *SASARAN BOCOR*${o.proj?' · '+o.proj:''}\n${o.road?'📍 '+o.road+'\n':''}🧭 Koordinat: ${o.ll}\n📏 ${o.dist} dari sensor ${o.from} ke arah ${o.to} (± ${o.tol} m)\n🗺 Google Maps: ${o.gm}\n_Point Of Interest (POI)_`,
   sv:'👁 Street View',svHere:'🏙 Lihat di sini',svTitle:'🏙 Street View · lokasi bocor',svOpenG:'Buka di Google Maps',svNoPano:'Jika Street View tidak dipaparkan, tiada imej jalan berdekatan titik ini. Cuba butang Street View untuk lokasi terdekat.',svLoading:'Memuat Street View…',svNone:'Tiada Street View dalam lingkungan 400 m dari titik bocor.',svJsFail:'Maps JavaScript API tidak dapat dimuat (semak key & API diaktifkan). Dipaparkan tanpa tanda bocor.',svDist:(d,tol)=>`📍 Tanda berkelip = anggaran lokasi bocor · ${d} m dari kamera · toleransi ± ${tol} m. Kamera berpusing menghadap tanda bila anda bergerak.`,
   svSet:'⚙️ Street View dalam alat (pilihan)',svSetHint:'Masukkan Google Maps API key (aktifkan Maps JavaScript API) untuk lihat Street View dalam pop-up dengan tanda bocor berkelip. Tanpa key, butang 👁 Street View tetap membuka Google Maps.',svKeyPh:'Google Maps API key',
   photoAdd:'📷 Gambar tapak',photoTitle:n=>`📷 Gambar tapak · Bocor ${n}`,photoDel:'🗑 Padam gambar',photoPrev:'◀',photoNext:'▶',photoErr:'Gambar terlalu besar untuk disimpan. Cuba kurangkan bilangan gambar.',
@@ -598,23 +636,23 @@ const T={
   proj:'Project',projPh:'Project name, e.g. Taman Bukit Jalan 3',saveProj:'💾 Save project',openProj:'📂 Open project',
   saveHint:'Save the project as one .html file. Double-click that file later to continue with all the data.',
   unsaved:'● There are changes not yet saved to file.',savedAs:f=>`Saved as ${f}. Open this file directly next time.`,
-  opened:f=>`Project opened: ${f}`,openFail:'This file is not a POI Noise Logger project file.',leaveWarn:'There are unsaved changes.',
+  opened:f=>`Project opened: ${f}`,openFail:'This file is not a POI project file.',leaveWarn:'There are unsaved changes.',
   searchPh:'Search place or lat, lng',search:'🔍 Search',myLoc:'My location',
   s1:'Pipe plan',upload:'📤 Upload plan · JPG · PNG · PDF · DXF',pdfPage:'PDF page',of:n=>'of '+n,
   planHint:'Drag ✥ to move the plan. Tap ✥ to switch to ⟳ rotate mode, then drag the ⟳ knob to turn it. Drag the yellow corner squares to resize. Use ⟲ ⟳ ➖ ➕ for fine adjustment.',
   mbDone:'✔ Done',mbUndo:'↶ Undo',mbStop:'⏹ Stop',mbCancel:'✖ Cancel',savedDocs:n=>`Saved: Documents/POI-Noise-Logger/${n}`,
-  pinDel:'🗑 Remove pin',
+  pinDel:'🗑 Remove pin',tileSen:'📍 Total sensors',tileLeak:'💧 Leaks found',tileTap:'Tap for list',listSen:n=>`📍 Sensor list (${n})`,listLeak:n=>`💧 Leak locations found (${n})`,emptySen:'No sensors yet. Add them in section 2.',emptyLeak:'No leak locations marked yet.',tapGo:'Go ➜',onPipe:'on pipe',
   cropTitle:'✂️ Select the map area',cropHint:'Green box = the part that is used. Title, border, notes & tables outside the box are ignored. Drag the box or the yellow squares to adjust.',cropMap:'Map area',
   cropAuto:'🪄 Auto detect',cropFull:'⬜ Whole page',cropText:'Remove small text & labels',cropSize:'Max text size (px)',cropLayers:'Ignore title / border / notes layers',
   cropOk:'✔ Use this area',cropSkip:'Use without cropping',recrop:'✂️ Crop again',cropFound:'Border & title block detected.',cropFrame:'Border detected.',cropNone:'No clear border detected. Adjust the box yourself.',cropBusy:'Processing…',
-  viewH:'Plan view',viewFull:'Full',viewNoBg:'No background',viewPipes:'Pipes only',hueHint:'Line colours in the plan. Tap to hide/show (e.g. hide the red boundary, keep the blue pipes).',freeMode:'Free adjust (skew)',viewBusy:'Processing view…',
+  viewH:'Plan view',viewFull:'Full',viewNoBg:'No background',viewPipes:'Pipes only',hueHint:'Line colours in the plan. Tap to hide/show (e.g. hide the red boundary, keep the blue pipes).',freeMode:'Free adjust (skew)',viewBusy:'Processing view…',vivid:'✨ Brighten colours',thick:'Thick lines',
   opacity:'Opacity',lock:'🔒 Lock position',unlock:'🔓 Adjust position',hide:'🙈 Hide',show:'👁 Show',delPlan:'🗑 Remove plan',
   autoRH:'Detect pipes by colour',autoRHint:'Press the button below, then click exactly on a pipe line in the plan. Every line of the same colour becomes a pipe. Repeat for each pipe colour.',
   pick:'🎯 Pick colour from plan',colTol:'Colour tolerance',pipeName:'Pipe name',pipeNamePh:'e.g. Main 300mm',detect:'⚡ Detect pipes',
   dxfH:'Layers in the DXF',dxfHint:'Tick the layers that contain pipes. Layers named PIPE, PAIP, WATER or MAIN are already ticked.',dxfConvert:'⚡ Convert ticked layers to pipes',
   undoAuto:'↶ Remove last detection',
   manualPipes:'✏️ Draw pipes manually',hidePipes:'🙈 Hide pipes',showPipes:'👁 Show pipes',placeAtView:'🎯 Place plan on screen',
-  streetsH:'🛣 Street names in the drawing',streetSearchPh:'Type street / taman name',goPlace:'📍 Go & place plan',streetsFound:n=>`${n} names detected. Tap one to go there & place the plan.`,ocrBusy:'Reading text in the drawing (OCR)…',ocrNone:'No street names detected. Type a street name to go there.',ocrFail:'Could not read the drawing text. Type a street name to go there.',flying:n=>`📍 Pin placed at ${n}. Drag the plan ✥ to the pin, tap ✥ to rotate, drag a corner to resize.`,geoNone:n=>`“${n}” not found. Try another name or add the taman/town.`,
+  streetsH:'🛣 Street names in the drawing',streetSearchPh:'Street, taman, building, place…',goPlace:'📍 Go & place plan',streetsFound:n=>`${n} names detected. Tap one to go there & place the plan.`,ocrBusy:'Reading text in the drawing (OCR)…',ocrNone:'No street names detected. Type a street name to go there.',ocrFail:'Could not read the drawing text. Type a street name to go there.',flying:n=>`📍 Pin placed at ${n}. Drag the plan ✥ to the pin, tap ✥ to rotate, drag a corner to resize.`,geoNone:n=>`“${n}” not found. Try another name or add the taman/town.`,
   addSensorH:'➕ Add sensor by coordinates',labelPh:'Name',coordPh:'Coordinates: 3.073300, 101.519140',addSensor:'➕ Add',coordBad:'Coordinate format: lat, lng (e.g. 3.073300, 101.519140)',straight:' (straight line)',leakCalcH:'💧 Locate leak',
   saveLib:'📚 Save to library',openLib:'📂 Open library',goSensor:'Go',
   s2:'Sensors & leak location',s2Hint:'Draw manually: press "Draw pipe", click at every bend, then "Done" or double-click. Pipes whose ends are close (≤ 2 m) count as connected.',
@@ -648,8 +686,9 @@ const T={
   detectNone:'No lines with that colour. Click exactly on a line or raise the tolerance.',detectFail:'Detection failed for this plan.',removed:n=>`${n} pipes removed.`,
   notFoundLoc:'Location not found.',searchFail:'Search failed. Try entering lat, lng coordinates.',locFail:'Could not get location. Allow location access in the browser.',
   dxfReload:'To detect DXF layers again after a refresh, upload the DXF file again.',
-  layers:{hyb:'Satellite + place names',sat:'Satellite',st:'Street map',topo:'Topo'},
-  waBtn:'💬 WhatsApp',waMsg:o=>`🚨 *LEAK TARGET*${o.proj?' · '+o.proj:''}\n${o.road?'📍 '+o.road+'\n':''}🧭 Coordinates: ${o.ll}\n📏 ${o.dist} from sensor ${o.from} towards ${o.to} (± ${o.tol} m)\n🗺 Google Maps: ${o.gm}\n_POI Noise Logger by ProKuiz_`,
+  layers:{groad:'Google Maps',gsat:'Google Satellite',hyb:'Satellite + place names',sat:'Satellite',osm:'Street map (OSM)'},
+  gSet:'⚙️ Google Maps (optional)',gHint:'Enter a Google API key with the "Map Tiles API" enabled to get Google Maps & Google Satellite in the map layer button (top right of the map).',gKeyPh:'Google Maps API key',gSave:'💾 Save key',gOk:'✅ Google Maps active. Choose it in the map layer button.',gFail:'❌ Invalid key or Map Tiles API not enabled.',gNone:'No key: use Esri Satellite or Street map (OSM).',
+  waBtn:'💬 WhatsApp',waMsg:o=>`🚨 *LEAK TARGET*${o.proj?' · '+o.proj:''}\n${o.road?'📍 '+o.road+'\n':''}🧭 Coordinates: ${o.ll}\n📏 ${o.dist} from sensor ${o.from} towards ${o.to} (± ${o.tol} m)\n🗺 Google Maps: ${o.gm}\n_Point Of Interest (POI)_`,
   sv:'👁 Street View',svHere:'🏙 View here',svTitle:'🏙 Street View · leak location',svOpenG:'Open in Google Maps',svNoPano:'If Street View does not show, there is no street imagery near this point. Try the Street View button for the nearest location.',svLoading:'Loading Street View…',svNone:'No Street View within 400 m of the leak point.',svJsFail:'The Maps JavaScript API could not load (check the key and that the API is enabled). Shown without the leak marker.',svDist:(d,tol)=>`📍 Blinking marker = estimated leak location · ${d} m from camera · tolerance ± ${tol} m. The camera turns to face the marker as you move.`,
   svSet:'⚙️ Street View inside the tool (optional)',svSetHint:'Enter a Google Maps API key (enable the Maps JavaScript API) to view Street View in a pop-up with a blinking leak marker. Without a key, the 👁 Street View button still opens Google Maps.',svKeyPh:'Google Maps API key',
   photoAdd:'📷 Site photos',photoTitle:n=>`📷 Site photos · Leak ${n}`,photoDel:'🗑 Delete photo',photoPrev:'◀',photoNext:'▶',photoErr:'The photos are too large to store. Try fewer photos.',
@@ -687,14 +726,48 @@ function applyStatic(){
 }
 const map=L.map('map',{doubleClickZoom:false}).setView([2.1960,102.2480],15);
 const E='https://server.arcgisonline.com/ArcGIS/rest/services/';
-const jalan=L.tileLayer(E+'World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'&copy; Esri'});
-const topo=L.tileLayer(E+'World_Topo_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'&copy; Esri'});
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,maxNativeZoom:19,attribution:'&copy; OpenStreetMap'});
 const sat=L.tileLayer(E+'World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Imagery &copy; Esri'});
 const lbl=L.tileLayer(E+'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:19});
 const hyb=L.layerGroup([sat,lbl]);
+const BASES={hyb,sat,osm};let curBase='hyb';
+function gKey(){try{return(localStorage.getItem('poi-gkey')||'').trim();}catch(e){return'';}}
+/* Google Maps via the official Map Tiles API (needs a key with "Map Tiles API" enabled) */
+async function googleSession(mapType,key,extra){
+  const ck='poi-gsess-'+mapType+'-'+LANG;
+  try{const c=JSON.parse(localStorage.getItem(ck)||'null');if(c&&c.key===key&&c.exp>Date.now()+3600e3)return c.session;}catch(e){}
+  const body=Object.assign({mapType,language:LANG==='en'?'en-GB':'ms-MY',region:'MY',scale:'scaleFactor2x',highDpi:true},extra||{});
+  const r=await fetch('https://tile.googleapis.com/v1/createSession?key='+encodeURIComponent(key),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error('session '+r.status);
+  const d=await r.json();
+  try{localStorage.setItem(ck,JSON.stringify({key,session:d.session,exp:(+d.expiry||0)*1000||Date.now()+86400e3*7}));}catch(e){}
+  return d.session;
+}
+async function setupGoogle(){
+  delete BASES.groad;delete BASES.gsat;const key=gKey();
+  if(!key){buildLayerCtl();return;}
+  try{
+    const [sr,ss]=await Promise.all([googleSession('roadmap',key),googleSession('satellite',key,{layerTypes:['layerRoadmap']})]);
+    const att='Map data &copy;'+new Date().getFullYear()+' Google';
+    BASES.groad=L.tileLayer(`https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=${sr}&key=${encodeURIComponent(key)}`,{maxZoom:22,tileSize:256,attribution:att});
+    BASES.gsat=L.tileLayer(`https://tile.googleapis.com/v1/2dtiles/{z}/{x}/{y}?session=${ss}&key=${encodeURIComponent(key)}`,{maxZoom:22,tileSize:256,attribution:att});
+    if($('gKeyMsg'))$('gKeyMsg').textContent=t('gOk');
+  }catch(e){console.error(e);if($('gKeyMsg'))$('gKeyMsg').textContent=t('gFail');}
+  buildLayerCtl();
+}
+let layerCtl=null;
+function buildLayerCtl(){
+  if(layerCtl)map.removeControl(layerCtl);const n=t('layers'),o={};
+  if(BASES.groad)o[n.groad]=BASES.groad;if(BASES.gsat)o[n.gsat]=BASES.gsat;
+  o[n.hyb]=BASES.hyb;o[n.sat]=BASES.sat;o[n.osm]=BASES.osm;
+  layerCtl=L.control.layers(o).addTo(map);
+  let want='hyb';try{want=localStorage.getItem('poi-base')||'hyb';}catch(e){}
+  if(!BASES[want])want='hyb';
+  if(want!==curBase||!map.hasLayer(BASES[want])){Object.values(BASES).forEach(l=>{if(map.hasLayer(l))map.removeLayer(l);});BASES[want].addTo(map);curBase=want;}
+}
+map.on('baselayerchange',e=>{const k=Object.keys(BASES).find(x=>BASES[x]===e.layer);if(k){curBase=k;try{localStorage.setItem('poi-base',k);}catch(_){}}});
 hyb.addTo(map);
-let layerCtl=null;function buildLayerCtl(){if(layerCtl)map.removeControl(layerCtl);const n=t('layers');const o={};o[n.hyb]=hyb;o[n.sat]=sat;o[n.st]=jalan;o[n.topo]=topo;layerCtl=L.control.layers(o).addTo(map);}
-buildLayerCtl();
+buildLayerCtl();setupGoogle();
 L.control.scale({imperial:false}).addTo(map);
 map.createPane('plan').style.zIndex=350;
 
@@ -920,6 +993,7 @@ function renderSide(){
       ${(lk.photos||[]).length?`<div class="thumbs">${lk.photos.map((ph,k)=>`<button class="th" data-photoview="${lk.id}:${k}"><img src="${ph}" alt=""></button>`).join('')}</div>`:''}
       </div>`;}).join('');
   calc();status();
+  $('cntSen').textContent=S.sensors.length;$('cntLeak').textContent=S.leaks.length;$('tileLeak').classList.toggle('has',S.leaks.length>0);
 }
 const aside=document.querySelector('aside');
 aside.addEventListener('input',e=>{
@@ -1032,7 +1106,11 @@ function placeImg(){
 }
 /* ---- plan view filter (full / no background / pipes only) ---- */
 const VIEWC={};let viewBusy=null;
-function viewKey(){return IMG.src.length+':'+IMG.src.slice(-32)+':'+(IMG.view||'full')+':'+((IMG.hueOff||[]).join(','));}
+const VIV=()=>IMG.vivid==null?0.8:IMG.vivid,THK=()=>IMG.thick==null?true:IMG.thick;
+function viewKey(){return IMG.src.length+':'+IMG.src.slice(-32)+':'+(IMG.view||'full')+':'+((IMG.hueOff||[]).join(','))+':'+VIV()+':'+THK();}
+function vividRGB(r,g,b,f){if(!f)return[r,g,b];const h=hueOf(r,g,b)/60,x=1-Math.abs(h%2-1);let v=[0,0,0];
+  if(h<1)v=[1,x,0];else if(h<2)v=[x,1,0];else if(h<3)v=[0,1,x];else if(h<4)v=[0,x,1];else if(h<5)v=[x,0,1];else v=[1,0,x];
+  return[r+(v[0]*255-r)*f,g+(v[1]*255-g)*f,b+(v[2]*255-b)*f];}
 function planViewURL(){
   if(!IMG.view||IMG.view==='full')return IMG.src;
   const k=viewKey();if(VIEWC[k])return VIEWC[k];
@@ -1044,11 +1122,12 @@ function loadOrig(){
   return new Promise(res=>{const im=new Image();im.onload=()=>{const cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;
     const g=cv.getContext('2d');g.drawImage(im,0,0);const d=g.getImageData(0,0,cv.width,cv.height);VIEWC[k]={w:cv.width,h:cv.height,d};res(VIEWC[k]);};im.src=IMG.src;});
 }
+const isCol=(sat,mx,l)=>sat>=28&&mx>=60&&sat/mx>=0.18&&l<238;
 const hueOf=(r,g,b)=>{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;if(!d)return 0;let h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;return h<0?h+360:h;};
 async function analyseHues(){
   const o=await loadOrig(),d=o.d.data,cnt=new Array(24).fill(0),sum=Array.from({length:24},()=>[0,0,0]);let tot=0;
   for(let i=0;i<d.length;i+=8){const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];if(a<100)continue;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);
-    if(mx-mn<55||mx<70)continue;const k=Math.floor(hueOf(r,g,b)/15)%24;cnt[k]++;sum[k][0]+=r;sum[k][1]+=g;sum[k][2]+=b;tot++;}
+    if(!isCol(mx-mn,mx,.299*r+.587*g+.114*b))continue;const k=Math.floor(hueOf(r,g,b)/15)%24;cnt[k]++;sum[k][0]+=r;sum[k][1]+=g;sum[k][2]+=b;tot++;}
   const out=[];for(let k=0;k<24;k++)if(tot&&cnt[k]/tot>=0.006)out.push({k,n:cnt[k],c:rgbHex(sum[k].map(v=>v/cnt[k]))});
   // merge neighbouring buckets of the same colour family
   const groups=[];out.forEach(h=>{const g=groups.find(G=>G.ks.some(x=>Math.min((x-h.k+24)%24,(h.k-x+24)%24)<=1));if(g){g.ks.push(h.k);if(h.n>g.n){g.n=h.n;g.c=h.c;}}else groups.push({ks:[h.k],n:h.n,c:h.c});});
@@ -1056,19 +1135,20 @@ async function analyseHues(){
 }
 async function buildView(key){
   const o=await loadOrig(),w=o.w,h=o.h,src=o.d.data,out=new ImageData(w,h),d=out.data,off=new Set(IMG.hueOff||[]),mode=IMG.view;
-  const keep=new Uint8Array(w*h);
+  const keep=new Uint8Array(w*h),vf=VIV(),tk=THK();
   for(let i=0,j=0;j<w*h;i+=4,j++){const r=src[i],g=src[i+1],b=src[i+2],a=src[i+3];if(a<20)continue;
     const mx=Math.max(r,g,b),mn=Math.min(r,g,b),sat=mx-mn,l=.299*r+.587*g+.114*b;
-    if(mode==='pipes'){if(sat>=55&&mx>=70&&!off.has(Math.floor(hueOf(r,g,b)/15)%24)){d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=255;keep[j]=1;}}
+    if(mode==='pipes'){if(isCol(sat,mx,l)&&!off.has(Math.floor(hueOf(r,g,b)/15)%24)){const v=vividRGB(r,g,b,vf);d[i]=v[0];d[i+1]=v[1];d[i+2]=v[2];d[i+3]=255;keep[j]=1;}}
     else{ // no background: white goes transparent, dark lines fade in by darkness
-      let al=sat>=45?255:Math.max(0,Math.min(255,(232-l)*4));if(off.size&&sat>=55&&off.has(Math.floor(hueOf(r,g,b)/15)%24))al=0;
-      if(al){d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=Math.min(a,al);}}
+      const col=isCol(sat,mx,l);let al=col?255:Math.max(0,Math.min(255,(232-l)*4));if(off.size&&col&&off.has(Math.floor(hueOf(r,g,b)/15)%24))al=0;
+      if(al){if(col){const v=vividRGB(r,g,b,vf);d[i]=v[0];d[i+1]=v[1];d[i+2]=v[2];keep[j]=1;}else{d[i]=r;d[i+1]=g;d[i+2]=b;}d[i+3]=Math.min(a,al);}}
   }
-  if(mode==='pipes'){ // thicken thin lines by 1px so they read over the satellite
+  const passes=(mode==='pipes'?1:0)+(tk?1:0);
+  for(let ps=0;ps<passes;ps++){ // thicken coloured lines so they read over the satellite
     const K=keep.slice();
     for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const j=y*w+x;if(K[j])continue;
       let n=-1;for(const q of [j-1,j+1,j-w,j+w])if(K[q]){n=q;break;}
-      if(n>=0){const i=j*4,s2=n*4;d[i]=d[s2];d[i+1]=d[s2+1];d[i+2]=d[s2+2];d[i+3]=230;}}
+      if(n>=0){const i=j*4,s2=n*4;d[i]=d[s2];d[i+1]=d[s2+1];d[i+2]=d[s2+2];d[i+3]=Math.max(d[i+3],235);keep[j]=1;}}
   }
   const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').putImageData(out,0,0);
   const blob=await new Promise(r=>cv.toBlob(r,'image/png'));VIEWC[key]=URL.createObjectURL(blob);
@@ -1077,10 +1157,13 @@ async function renderHueChips(){
   const box=$('hueBox');box.hidden=!IMG||!IMG.view||IMG.view==='full';if(box.hidden)return;
   if(!IMG._hues){IMG._hues=await analyseHues();}
   const off=new Set(IMG.hueOff||[]);
-  $('hueChips').innerHTML=IMG._hues.map((g,i)=>`<button class="huechip${g.ks.every(k=>off.has(k))?' off':''}" data-hue="${i}"><i style="background:${g.c}"></i>${Math.round(g.n/IMG._hues.reduce((a,x)=>a+x.n,0)*100)}%</button>`).join('');
+  $('hueChips').innerHTML=IMG._hues.map((g,i)=>`<button class="huechip${g.ks.every(k=>off.has(k))?' off':''}" data-hue="${i}"><i style="background:${(()=>{const n=parseInt(g.c.slice(1),16);return rgbHex(vividRGB(n>>16&255,n>>8&255,n&255,VIV()));})()}"></i>${Math.round(g.n/IMG._hues.reduce((a,x)=>a+x.n,0)*100)}%</button>`).join('');
 }
 function setView(v){if(!IMG)return;IMG.view=v;[...$('viewSeg').children].forEach(b=>b.classList.toggle('on',b.dataset.view===v));
   if(v==='pipes'&&IMG.op<0.9){IMG.op=1;$('op').value=1;}placeImg();renderHueChips();saveImg();}
+$('vivid').addEventListener('input',e=>{$('vividTxt').textContent=e.target.value+'%';});
+$('vivid').addEventListener('change',e=>{if(!IMG)return;IMG.vivid=+e.target.value/100;placeImg();renderHueChips();saveImg();});
+$('thick').addEventListener('change',e=>{if(!IMG)return;IMG.thick=e.target.checked;placeImg();saveImg();});
 $('viewSeg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(b)setView(b.dataset.view);});
 $('hueChips').addEventListener('click',e=>{const b=e.target.closest('[data-hue]');if(!b||!IMG._hues)return;const g=IMG._hues[+b.dataset.hue],off=new Set(IMG.hueOff||[]);
   const allOff=g.ks.every(k=>off.has(k));g.ks.forEach(k=>allOff?off.delete(k):off.add(k));IMG.hueOff=[...off];placeImg();renderHueChips();saveImg();});
@@ -1117,6 +1200,7 @@ function drawHandles(){
   if(!IMG)return;
   $('op').value=IMG.op;$('freeMode').checked=!!IMG.free;
   [...$('viewSeg').children].forEach(b=>b.classList.toggle('on',b.dataset.view===(IMG.view||'full')));renderHueChips();
+  $('vivid').value=Math.round(VIV()*100);$('vividTxt').textContent=Math.round(VIV()*100)+'%';$('thick').checked=THK();
   $('btnLock').textContent=IMG.locked?t('unlock'):t('lock');
   $('btnHideImg').textContent=IMG.hidden?t('show'):t('hide');
   if(IMG.locked||IMG.hidden)return;
@@ -1172,7 +1256,7 @@ function setPlan(cv,kind,keep,geoC){
   else{const sz=map.getSize(),ar=cv.height/cv.width;let W=sz.x*0.6,H=W*ar;if(H>sz.y*0.6){H=sz.y*0.6;W=H/ar;}
     const x0=(sz.x-W)/2,y0=(sz.y-H)/2;
     c=[[x0,y0],[x0+W,y0],[x0,y0+H]].map(p=>{const ll=map.containerPointToLatLng(p);return[ll.lat,ll.lng];});}
-  const pv=IMG&&(keep||geoC)?{view:IMG.view,hueOff:IMG.hueOff,free:IMG.free}:{};
+  const pv=IMG&&(keep||geoC)?{view:IMG.view,hueOff:IMG.hueOff,free:IMG.free,vivid:IMG.vivid,thick:IMG.thick}:{};
   IMG={src,w:cv.width,h:cv.height,c,op:(keep||geoC)&&IMG?IMG.op:(kind==='dxf'?0.9:0.6),locked:false,hidden:false,kind,...pv};
   planCanvas=kind==='dxf'?null:cv;
   placeImg();drawHandles();saveImg();
@@ -1616,17 +1700,7 @@ function rdp(pts,eps){
 /* ================= search / export / misc ================= */
 function parseLL(s){const m=String(s).match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);if(!m)return null;
   const lat=+m[1],lng=+m[2];return(Math.abs(lat)>90||Math.abs(lng)>180)?null:{lat,lng};}
-$('btnSearch').onclick=async()=>{
-  const v=$('q').value.trim();if(!v)return;
-  const ll=parseLL(v);if(ll){map.setView([ll.lat,ll.lng],18);dropPin(ll.lat,ll.lng,v);return;}
-  try{const c=map.getCenter();
-    const r=await fetch(`https://photon.komoot.io/api/?limit=1&lat=${c.lat}&lon=${c.lng}&q=`+encodeURIComponent(v));
-    const d=await r.json();
-    if(d.features&&d.features.length){const f=d.features[0],[lng,lat]=f.geometry.coordinates;map.setView([lat,lng],17);dropPin(lat,lng,f.properties&&f.properties.name||v);}
-    else setStatusText(t('notFoundLoc'),true);
-  }catch(e){setStatusText(t('searchFail'),true);}
-};
-$('q').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnSearch').click();});
+(()=>{const mc=map.getContainer(),b=$('btnMe');if(mc&&mc.appendChild){mc.appendChild(b);['click','dblclick','mousedown','touchstart','pointerdown'].forEach(ev=>b.addEventListener(ev,e=>e.stopPropagation()));}})();
 $('btnMe').onclick=()=>map.locate({setView:true,maxZoom:18});
 map.on('locationerror',()=>setStatusText(t('locFail'),true));
 
@@ -1668,7 +1742,7 @@ function spanel(x,y,w,h,a=1){sc2.save();sc2.globalAlpha*=a;srr(sc2,x,y,w,h,14);s
 
 async function openSim(lk){
   const r=computeLeak(lk);if(r.err){$('leakErr').textContent=r.err;return;}
-  $('simModal').hidden=false;$('simMsg').textContent='';$('simTitle').textContent=tr('simTitle',$('projName').value.trim()||'POI Noise Logger');
+  $('simModal').hidden=false;$('simMsg').textContent='';$('simTitle').textContent=tr('simTitle',$('projName').value.trim()||'Point Of Interest (POI)');
   $('simPlay').textContent=tr('simPlay');$('simRe').textContent=tr('simRe');$('simRec').textContent=tr('simRec');$('simRec').disabled=false;
   $('simLoad').hidden=false;$('simLoad').textContent=tr('loadingMap');
   simPlaying=false;simT=0;cancelAnimationFrame(simRAF);
@@ -1843,7 +1917,7 @@ function waUrl(lk,r){const from=lk.ref==='B'?r.B:r.A,to=lk.ref==='B'?r.A:r.B;
   const txt=t('waMsg',{proj:$('projName').value.trim(),road:lk.road||'',ll:`${r.lat.toFixed(6)}, ${r.lng.toFixed(6)}`,dist:fmt(lk.raw??lk.dA),from:from.label,to:to.label,tol:lk.tol||0,gm:gmap(r.lat,r.lng),sv:svUrl(r.lat,r.lng)});
   return 'https://wa.me/?text='+encodeURIComponent(txt);}
 const svUrl=(lat,lng)=>`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat.toFixed(6)},${lng.toFixed(6)}`;
-function gKey(){try{return(localStorage.getItem('poi-gkey')||'').trim();}catch(e){return'';}}
+
 let photoTarget=null,photoView=null;
 function openModal(title,bodyHTML,ctrlHTML){$('svTitle').textContent=title;$('svBody').innerHTML=bodyHTML;$('svCtrl').innerHTML=ctrlHTML||'';$('svCtrl').hidden=!ctrlHTML;$('svModal').hidden=false;}
 function closeSv(){$('svModal').hidden=true;$('svBody').innerHTML='';photoView=null;clearInterval(svBlink);}
@@ -2080,6 +2154,31 @@ if(NATIVE){
   });
 }
 
+$('gKey').value=gKey();$('gKeyMsg').textContent=gKey()?'':t('gNone');
+$('gKeySave').onclick=()=>{const k=$('gKey').value.trim();try{localStorage.setItem('poi-gkey',k);}catch(e){}$('gKeyMsg').textContent=k?'…':t('gNone');setupGoogle();};
+/* ================= totals: sensor & leak lists ================= */
+function showSensorList(){
+  const rows=S.sensors.map((x,i)=>{const sn=snap(x),on=sn&&sn.d<=SNAPMAX;return `<button class="prow" data-gosen="${i}">
+    <span class="pk" style="background:${COL.sensor}">${esc(x.label)}</span><span class="pn">${esc(x.name||x.label)}</span><span class="pgo">${t('tapGo')}</span>
+    <span class="pc">${x.lat.toFixed(6)}, ${x.lng.toFixed(6)}</span>${on?`<span class="pr">CH ${sn.s.toFixed(1)} m · ${t('onPipe')}</span>`:''}</button>`;}).join('');
+  openModal(t('listSen',S.sensors.length),`<div class="plist">${rows||`<div class="pempty">${t('emptySen')}</div>`}</div>`,'');
+}
+function showLeakList(){
+  const rows=S.leaks.map((lk,i)=>{const r=computeLeak(lk);if(r.err)return'';const from=lk.ref==='B'?r.B:r.A;return `<button class="prow" data-goleak="${i}">
+    <span class="pk" style="background:${COL.leak}">${i+1}</span><span class="pn">${t('leakN',i+1)}</span><span class="pgo">${t('tapGo')}</span>
+    <span class="pc">${r.lat.toFixed(6)}, ${r.lng.toFixed(6)}</span><span class="pr">${fmt(lk.raw??lk.dA)} ${t('simFrom',esc(from.label))}${lk.road?' · 🛣 '+esc(lk.road):''}</span></button>`;}).join('');
+  openModal(t('listLeak',S.leaks.length),`<div class="plist">${rows||`<div class="pempty">${t('emptyLeak')}</div>`}</div>`,'');
+}
+$('tileSen').onclick=showSensorList;$('tileLeak').onclick=showLeakList;
+$('svBody').addEventListener('click',e=>{
+  const s1=e.target.closest('[data-gosen]'),l1=e.target.closest('[data-goleak]');
+  if(s1){const x=S.sensors[+s1.dataset.gosen];closeSv();if(!x)return;map.setView([x.lat,x.lng],19);
+    G.eachLayer(l=>{if(l.getLatLng&&l.getTooltip&&l.getTooltip()){const p=l.getLatLng();if(Math.abs(p.lat-x.lat)<1e-9&&Math.abs(p.lng-x.lng)<1e-9)l.openTooltip();}});
+    if(isMobile())setSheet('peek');}
+  if(l1){const lk=S.leaks[+l1.dataset.goleak];closeSv();if(!lk||lk.lat==null)return;map.setView([lk.lat,lk.lng],19);
+    G.eachLayer(l=>{if(l._leakId===lk.id)l.openPopup();});if(isMobile())setSheet('peek');}
+});
+
 /* ================= place pin (reference point for mapping) ================= */
 let placePin=null;
 function dropPin(lat,lng,name){
@@ -2228,7 +2327,7 @@ $('projName').addEventListener('input',markDirty);
 
 /* ================= start ================= */
 function setLang(l){LANG=l;try{localStorage.setItem('poi-lang',l);}catch(e){}
-  applyStatic();buildLayerCtl();setMode(mode);draw();drawHandles();libRender();
+  applyStatic();setupGoogle();setMode(mode);draw();drawHandles();libRender();
   if(pdfDoc)$('pdfPages').textContent=t('of',pdfDoc.numPages);}
 $('lgBM').onclick=()=>setLang('bm');$('lgEN').onclick=()=>setLang('en');
 applyStatic();setMode(null);
