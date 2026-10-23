@@ -70,6 +70,18 @@
   .status.act{background:rgba(245,158,11,.12);color:#fcd34d;border-color:rgba(245,158,11,.35)}
   .item{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;font-size:13px;padding:6px;border-radius:12px;background:var(--card2)}
   .item input:not([type=color]){padding:6px 9px;font-size:13px;border-radius:9px}
+  .fine button{padding:6px 11px;font-size:14px;min-height:0}
+  .huechip{display:inline-flex;gap:6px;align-items:center;padding:5px 10px!important;font-size:12.5px!important;min-height:0!important}
+  .huechip i{width:16px;height:16px;border-radius:5px;border:2px solid #fff;display:inline-block}
+  .huechip.off{opacity:.45;filter:grayscale(.6)}
+  .huechip.off i{border-style:dashed}
+  .hd.rot{border-radius:50%;width:26px;height:26px;display:grid;place-items:center;font-size:15px;line-height:1;background:#fde047}
+  .hd.mv.rotating{background:#a78bfa;color:#fff}
+  .tpin{width:40px;height:48px;display:grid;place-items:end center;filter:drop-shadow(0 3px 3px rgba(0,0,0,.6));animation:pinDrop .45s cubic-bezier(.2,.9,.3,1.3)}
+  .tpin span{font-size:38px;line-height:1}
+  @keyframes pinDrop{0%{transform:translateY(-40px);opacity:0}100%{transform:none;opacity:1}}
+  .leaflet-tooltip.tpinlbl{font-family:var(--head);font-weight:700;font-size:13px;background:#ef4444;color:#fff;border:2px solid #fff;border-radius:10px;padding:3px 9px}
+  @media (prefers-reduced-motion:reduce){.tpin{animation:none}}
   .sitem{display:grid;grid-template-columns:84px 1fr auto;gap:6px 8px;align-items:center;padding:8px;border-radius:12px;background:var(--card2)}
   .sitem input{padding:6px 9px;font-size:13px;border-radius:9px}
   .sitem .slbl{font-family:var(--head);font-weight:800;text-align:center;background:var(--sensor);border-color:var(--sensor);color:#fff}
@@ -267,7 +279,19 @@
     <div id="imgTools" hidden style="display:grid;gap:8px">
       <div id="pdfPageBox" class="row" hidden><span class="lab" data-i18n="pdfPage"></span><input id="pdfPage" type="number" min="1" value="1" style="width:80px;flex:none"><span id="pdfPages" class="muted"></span></div>
       <p class="hint" data-i18n="planHint"></p>
+      <div class="lab"><span data-i18n="viewH"></span>
+        <div class="seg" id="viewSeg"><button data-view="full" data-i18n="viewFull"></button><button data-view="nobg" data-i18n="viewNoBg"></button><button data-view="pipes" data-i18n="viewPipes"></button></div>
+      </div>
+      <div id="hueBox" hidden style="display:grid;gap:6px">
+        <span class="hint" data-i18n="hueHint"></span>
+        <div id="hueChips" class="row"></div>
+      </div>
       <div class="lab"><span data-i18n="opacity"></span><input type="range" id="op" min="0.1" max="1" step="0.05"></div>
+      <div class="row fine">
+        <button id="rotL" title="-1°">⟲ 1°</button><button id="rotR" title="+1°">⟳ 1°</button>
+        <button id="sclD" title="-2%">➖</button><button id="sclU" title="+2%">➕</button>
+        <label class="chk"><input type="checkbox" id="freeMode"><span data-i18n="freeMode"></span></label>
+      </div>
       <div class="row">
         <button id="btnPlaceView" class="blue" data-i18n="placeAtView"></button>
         <button id="btnLock"></button>
@@ -495,18 +519,20 @@ const T={
   opened:f=>`Projek dibuka: ${f}`,openFail:'Fail ini bukan fail projek POI Noise Logger.',leaveWarn:'Ada perubahan belum disimpan.',
   searchPh:'Cari tempat atau lat, lng',search:'🔍 Cari',myLoc:'Lokasi saya',
   s1:'Pelan paip',upload:'📤 Upload pelan · JPG · PNG · PDF · DXF',pdfPage:'Halaman PDF',of:n=>'daripada '+n,
-  planHint:'Seret 3 petak kuning (bucu atas kiri, atas kanan, bawah kiri) ke titik yang sama di satelit, contohnya simpang jalan atau bucu bangunan. Seret ✥ untuk alih seluruh pelan. Laraskan dahulu sebelum kesan paip.',
+  planHint:'Seret ✥ untuk alih pelan. Tekan ✥ untuk tukar ke mod ⟳ putar, kemudian seret bulatan ⟳ untuk pusing. Seret petak kuning di bucu untuk besar/kecil. Guna ⟲ ⟳ ➖ ➕ untuk laras halus.',
   mbDone:'✔ Siap',mbUndo:'↶ Undo',mbStop:'⏹ Berhenti',mbCancel:'✖ Batal',savedDocs:n=>`Disimpan: Documents/POI-Noise-Logger/${n}`,
+  pinDel:'🗑 Buang pin',
   cropTitle:'✂️ Pilih kawasan peta',cropHint:'Kotak hijau = bahagian yang digunakan. Tajuk, bingkai, nota & jadual di luar kotak diabaikan. Seret kotak atau petak kuning untuk laraskan.',cropMap:'Kawasan peta',
   cropAuto:'🪄 Auto kesan',cropFull:'⬜ Seluruh halaman',cropText:'Buang teks & label kecil',cropSize:'Saiz teks maks (px)',cropLayers:'Abaikan lapisan tajuk / bingkai / nota',
   cropOk:'✔ Guna kawasan ini',cropSkip:'Guna tanpa pangkas',recrop:'✂️ Pangkas semula',cropFound:'Bingkai & kotak tajuk dikesan.',cropFrame:'Bingkai dikesan.',cropNone:'Tiada bingkai jelas dikesan. Laraskan kotak sendiri.',cropBusy:'Memproses…',
+  viewH:'Paparan pelan',viewFull:'Penuh',viewNoBg:'Tanpa latar',viewPipes:'Paip sahaja',hueHint:'Warna garisan dalam pelan. Tekan untuk sorok/tunjuk (cth sorok merah sempadan, kekalkan biru paip).',freeMode:'Laras bebas (herot)',viewBusy:'Memproses paparan…',
   opacity:'Kelutsinaran',lock:'🔒 Kunci kedudukan',unlock:'🔓 Ubah kedudukan',hide:'🙈 Sembunyi',show:'👁 Tunjuk',delPlan:'🗑 Buang pelan',
   autoRH:'Kesan paip ikut warna',autoRHint:'Tekan butang di bawah, kemudian klik tepat pada garisan paip dalam pelan. Semua garisan dengan warna yang sama akan ditukar jadi paip. Ulang untuk setiap warna paip.',
   pick:'🎯 Ambil warna dari pelan',colTol:'Toleransi warna',pipeName:'Nama paip',pipeNamePh:'cth Paip utama 300mm',detect:'⚡ Kesan paip',
   dxfH:'Lapisan (layer) dalam DXF',dxfHint:'Tanda lapisan yang mengandungi paip. Lapisan bernama PIPE, PAIP, WATER atau MAIN sudah ditanda.',dxfConvert:'⚡ Tukar lapisan ditanda jadi paip',
   undoAuto:'↶ Buang hasil kesan terakhir',
   manualPipes:'✏️ Lukis paip manual',hidePipes:'🙈 Sorok paip',showPipes:'👁 Tunjuk paip',placeAtView:'🎯 Letak pelan di skrin',
-  streetsH:'🛣 Nama jalan dalam drawing',streetSearchPh:'Taip nama jalan / taman',goPlace:'📍 Pergi & letak pelan',streetsFound:n=>`${n} nama dikesan. Tekan untuk pergi ke lokasi & letak pelan di situ.`,ocrBusy:'Membaca teks dalam drawing (OCR)…',ocrNone:'Tiada nama jalan dikesan. Taip nama jalan untuk pergi ke lokasi.',ocrFail:'Tidak dapat membaca teks drawing. Taip nama jalan untuk pergi ke lokasi.',flying:n=>`Pergi ke ${n}… laraskan pelan dengan 3 titik kuning.`,geoNone:n=>`“${n}” tidak dijumpai. Cuba nama lain atau tambah nama taman/bandar.`,
+  streetsH:'🛣 Nama jalan dalam drawing',streetSearchPh:'Taip nama jalan / taman',goPlace:'📍 Pergi & letak pelan',streetsFound:n=>`${n} nama dikesan. Tekan untuk pergi ke lokasi & letak pelan di situ.`,ocrBusy:'Membaca teks dalam drawing (OCR)…',ocrNone:'Tiada nama jalan dikesan. Taip nama jalan untuk pergi ke lokasi.',ocrFail:'Tidak dapat membaca teks drawing. Taip nama jalan untuk pergi ke lokasi.',flying:n=>`📍 Pin diletak di ${n}. Seret ✥ pelan ke pin, tekan ✥ untuk putar, seret bucu untuk saiz.`,geoNone:n=>`“${n}” tidak dijumpai. Cuba nama lain atau tambah nama taman/bandar.`,
   addSensorH:'➕ Tambah sensor ikut koordinat',labelPh:'Nama',coordPh:'Koordinat: 3.073300, 101.519140',addSensor:'➕ Tambah',coordBad:'Format koordinat: lat, lng (cth 3.073300, 101.519140)',straight:' (garis lurus)',leakCalcH:'💧 Kira lokasi bocor',
   saveLib:'📚 Simpan ke library',openLib:'📂 Buka library',goSensor:'Pergi',
   s2:'Sensor & lokasi bocor',s2Hint:'Lukis sendiri: tekan "Lukis paip", klik setiap selekoh, kemudian "Siap" atau double-click. Paip yang hujungnya berdekatan (≤ 2 m) dikira bersambung.',
@@ -575,18 +601,20 @@ const T={
   opened:f=>`Project opened: ${f}`,openFail:'This file is not a POI Noise Logger project file.',leaveWarn:'There are unsaved changes.',
   searchPh:'Search place or lat, lng',search:'🔍 Search',myLoc:'My location',
   s1:'Pipe plan',upload:'📤 Upload plan · JPG · PNG · PDF · DXF',pdfPage:'PDF page',of:n=>'of '+n,
-  planHint:'Drag the 3 yellow squares (top-left, top-right, bottom-left corners) onto the matching points on the satellite, such as a road junction or building corner. Drag ✥ to move the whole plan. Align it before detecting pipes.',
+  planHint:'Drag ✥ to move the plan. Tap ✥ to switch to ⟳ rotate mode, then drag the ⟳ knob to turn it. Drag the yellow corner squares to resize. Use ⟲ ⟳ ➖ ➕ for fine adjustment.',
   mbDone:'✔ Done',mbUndo:'↶ Undo',mbStop:'⏹ Stop',mbCancel:'✖ Cancel',savedDocs:n=>`Saved: Documents/POI-Noise-Logger/${n}`,
+  pinDel:'🗑 Remove pin',
   cropTitle:'✂️ Select the map area',cropHint:'Green box = the part that is used. Title, border, notes & tables outside the box are ignored. Drag the box or the yellow squares to adjust.',cropMap:'Map area',
   cropAuto:'🪄 Auto detect',cropFull:'⬜ Whole page',cropText:'Remove small text & labels',cropSize:'Max text size (px)',cropLayers:'Ignore title / border / notes layers',
   cropOk:'✔ Use this area',cropSkip:'Use without cropping',recrop:'✂️ Crop again',cropFound:'Border & title block detected.',cropFrame:'Border detected.',cropNone:'No clear border detected. Adjust the box yourself.',cropBusy:'Processing…',
+  viewH:'Plan view',viewFull:'Full',viewNoBg:'No background',viewPipes:'Pipes only',hueHint:'Line colours in the plan. Tap to hide/show (e.g. hide the red boundary, keep the blue pipes).',freeMode:'Free adjust (skew)',viewBusy:'Processing view…',
   opacity:'Opacity',lock:'🔒 Lock position',unlock:'🔓 Adjust position',hide:'🙈 Hide',show:'👁 Show',delPlan:'🗑 Remove plan',
   autoRH:'Detect pipes by colour',autoRHint:'Press the button below, then click exactly on a pipe line in the plan. Every line of the same colour becomes a pipe. Repeat for each pipe colour.',
   pick:'🎯 Pick colour from plan',colTol:'Colour tolerance',pipeName:'Pipe name',pipeNamePh:'e.g. Main 300mm',detect:'⚡ Detect pipes',
   dxfH:'Layers in the DXF',dxfHint:'Tick the layers that contain pipes. Layers named PIPE, PAIP, WATER or MAIN are already ticked.',dxfConvert:'⚡ Convert ticked layers to pipes',
   undoAuto:'↶ Remove last detection',
   manualPipes:'✏️ Draw pipes manually',hidePipes:'🙈 Hide pipes',showPipes:'👁 Show pipes',placeAtView:'🎯 Place plan on screen',
-  streetsH:'🛣 Street names in the drawing',streetSearchPh:'Type street / taman name',goPlace:'📍 Go & place plan',streetsFound:n=>`${n} names detected. Tap one to go there & place the plan.`,ocrBusy:'Reading text in the drawing (OCR)…',ocrNone:'No street names detected. Type a street name to go there.',ocrFail:'Could not read the drawing text. Type a street name to go there.',flying:n=>`Going to ${n}… align the plan with the 3 yellow points.`,geoNone:n=>`“${n}” not found. Try another name or add the taman/town.`,
+  streetsH:'🛣 Street names in the drawing',streetSearchPh:'Type street / taman name',goPlace:'📍 Go & place plan',streetsFound:n=>`${n} names detected. Tap one to go there & place the plan.`,ocrBusy:'Reading text in the drawing (OCR)…',ocrNone:'No street names detected. Type a street name to go there.',ocrFail:'Could not read the drawing text. Type a street name to go there.',flying:n=>`📍 Pin placed at ${n}. Drag the plan ✥ to the pin, tap ✥ to rotate, drag a corner to resize.`,geoNone:n=>`“${n}” not found. Try another name or add the taman/town.`,
   addSensorH:'➕ Add sensor by coordinates',labelPh:'Name',coordPh:'Coordinates: 3.073300, 101.519140',addSensor:'➕ Add',coordBad:'Coordinate format: lat, lng (e.g. 3.073300, 101.519140)',straight:' (straight line)',leakCalcH:'💧 Locate leak',
   saveLib:'📚 Save to library',openLib:'📂 Open library',goSensor:'Go',
   s2:'Sensors & leak location',s2Hint:'Draw manually: press "Draw pipe", click at every bend, then "Done" or double-click. Pipes whose ends are close (≤ 2 m) count as connected.',
@@ -786,7 +814,7 @@ function markDirty(){dirty=true;$('projMsg').textContent=t('unsaved');$('projMsg
 function save(quiet){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(!quiet)markDirty();}
 function saveImg(){
   markDirty();
-  try{if(IMG)localStorage.setItem(KEYIMG,JSON.stringify(IMG));else localStorage.removeItem(KEYIMG);$('imgNote').textContent='';}
+  try{if(IMG)localStorage.setItem(KEYIMG,JSON.stringify(IMG,(k,v)=>k==='_hues'?undefined:v));else localStorage.removeItem(KEYIMG);$('imgNote').textContent='';}
   catch(e){$('imgNote').textContent=t('tooBig');}
 }
 function load(){
@@ -995,34 +1023,130 @@ let imgEl=null,handles=[],mvHandle=null;
 function placeImg(){
   if(!IMG||IMG.hidden){if(imgEl)imgEl.style.display='none';return;}
   if(!imgEl){imgEl=document.createElement('img');imgEl.className='plan';map.getPane('plan').appendChild(imgEl);}
-  if(imgEl.dataset.k!==IMG.src.length+':'+IMG.src.slice(-40)){imgEl.src=IMG.src;imgEl.dataset.k=IMG.src.length+':'+IMG.src.slice(-40);}
+  const want=planViewURL();
+  if(want&&imgEl.dataset.k!==want){imgEl.src=want;imgEl.dataset.k=want;}
   imgEl.style.display='';
   const [p0,p1,p2]=IMG.c.map(c=>map.latLngToLayerPoint(c)),w=IMG.w,h=IMG.h;
   imgEl.style.width=w+'px';imgEl.style.height=h+'px';imgEl.style.opacity=IMG.op;
   imgEl.style.transform=`matrix(${(p1.x-p0.x)/w},${(p1.y-p0.y)/w},${(p2.x-p0.x)/h},${(p2.y-p0.y)/h},${p0.x},${p0.y})`;
 }
-const centre=()=>[(IMG.c[1][0]+IMG.c[2][0])/2,(IMG.c[1][1]+IMG.c[2][1])/2];
+/* ---- plan view filter (full / no background / pipes only) ---- */
+const VIEWC={};let viewBusy=null;
+function viewKey(){return IMG.src.length+':'+IMG.src.slice(-32)+':'+(IMG.view||'full')+':'+((IMG.hueOff||[]).join(','));}
+function planViewURL(){
+  if(!IMG.view||IMG.view==='full')return IMG.src;
+  const k=viewKey();if(VIEWC[k])return VIEWC[k];
+  if(viewBusy!==k){viewBusy=k;buildView(k).then(()=>{viewBusy=null;placeImg();});}
+  return null;
+}
+function loadOrig(){
+  const k='o:'+IMG.src.length+':'+IMG.src.slice(-32);if(VIEWC[k])return Promise.resolve(VIEWC[k]);
+  return new Promise(res=>{const im=new Image();im.onload=()=>{const cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;
+    const g=cv.getContext('2d');g.drawImage(im,0,0);const d=g.getImageData(0,0,cv.width,cv.height);VIEWC[k]={w:cv.width,h:cv.height,d};res(VIEWC[k]);};im.src=IMG.src;});
+}
+const hueOf=(r,g,b)=>{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;if(!d)return 0;let h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h*=60;return h<0?h+360:h;};
+async function analyseHues(){
+  const o=await loadOrig(),d=o.d.data,cnt=new Array(24).fill(0),sum=Array.from({length:24},()=>[0,0,0]);let tot=0;
+  for(let i=0;i<d.length;i+=8){const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];if(a<100)continue;const mx=Math.max(r,g,b),mn=Math.min(r,g,b);
+    if(mx-mn<55||mx<70)continue;const k=Math.floor(hueOf(r,g,b)/15)%24;cnt[k]++;sum[k][0]+=r;sum[k][1]+=g;sum[k][2]+=b;tot++;}
+  const out=[];for(let k=0;k<24;k++)if(tot&&cnt[k]/tot>=0.006)out.push({k,n:cnt[k],c:rgbHex(sum[k].map(v=>v/cnt[k]))});
+  // merge neighbouring buckets of the same colour family
+  const groups=[];out.forEach(h=>{const g=groups.find(G=>G.ks.some(x=>Math.min((x-h.k+24)%24,(h.k-x+24)%24)<=1));if(g){g.ks.push(h.k);if(h.n>g.n){g.n=h.n;g.c=h.c;}}else groups.push({ks:[h.k],n:h.n,c:h.c});});
+  return groups.sort((a,b)=>b.n-a.n).slice(0,8);
+}
+async function buildView(key){
+  const o=await loadOrig(),w=o.w,h=o.h,src=o.d.data,out=new ImageData(w,h),d=out.data,off=new Set(IMG.hueOff||[]),mode=IMG.view;
+  const keep=new Uint8Array(w*h);
+  for(let i=0,j=0;j<w*h;i+=4,j++){const r=src[i],g=src[i+1],b=src[i+2],a=src[i+3];if(a<20)continue;
+    const mx=Math.max(r,g,b),mn=Math.min(r,g,b),sat=mx-mn,l=.299*r+.587*g+.114*b;
+    if(mode==='pipes'){if(sat>=55&&mx>=70&&!off.has(Math.floor(hueOf(r,g,b)/15)%24)){d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=255;keep[j]=1;}}
+    else{ // no background: white goes transparent, dark lines fade in by darkness
+      let al=sat>=45?255:Math.max(0,Math.min(255,(232-l)*4));if(off.size&&sat>=55&&off.has(Math.floor(hueOf(r,g,b)/15)%24))al=0;
+      if(al){d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=Math.min(a,al);}}
+  }
+  if(mode==='pipes'){ // thicken thin lines by 1px so they read over the satellite
+    const K=keep.slice();
+    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const j=y*w+x;if(K[j])continue;
+      let n=-1;for(const q of [j-1,j+1,j-w,j+w])if(K[q]){n=q;break;}
+      if(n>=0){const i=j*4,s2=n*4;d[i]=d[s2];d[i+1]=d[s2+1];d[i+2]=d[s2+2];d[i+3]=230;}}
+  }
+  const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').putImageData(out,0,0);
+  const blob=await new Promise(r=>cv.toBlob(r,'image/png'));VIEWC[key]=URL.createObjectURL(blob);
+}
+async function renderHueChips(){
+  const box=$('hueBox');box.hidden=!IMG||!IMG.view||IMG.view==='full';if(box.hidden)return;
+  if(!IMG._hues){IMG._hues=await analyseHues();}
+  const off=new Set(IMG.hueOff||[]);
+  $('hueChips').innerHTML=IMG._hues.map((g,i)=>`<button class="huechip${g.ks.every(k=>off.has(k))?' off':''}" data-hue="${i}"><i style="background:${g.c}"></i>${Math.round(g.n/IMG._hues.reduce((a,x)=>a+x.n,0)*100)}%</button>`).join('');
+}
+function setView(v){if(!IMG)return;IMG.view=v;[...$('viewSeg').children].forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  if(v==='pipes'&&IMG.op<0.9){IMG.op=1;$('op').value=1;}placeImg();renderHueChips();saveImg();}
+$('viewSeg').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(b)setView(b.dataset.view);});
+$('hueChips').addEventListener('click',e=>{const b=e.target.closest('[data-hue]');if(!b||!IMG._hues)return;const g=IMG._hues[+b.dataset.hue],off=new Set(IMG.hueOff||[]);
+  const allOff=g.ks.every(k=>off.has(k));g.ks.forEach(k=>allOff?off.delete(k):off.add(k));IMG.hueOff=[...off];placeImg();renderHueChips();saveImg();});
+
+/* ---- plan handles: move / rotate / resize ---- */
+let hMode='move',rotKnob=null,rotLine=null,cornerMk=[];
+const lp=c=>map.latLngToLayerPoint(c),toLL=p=>{const q=map.layerPointToLatLng(p);return[q.lat,q.lng];};
+function corners(){const [a,b,c]=IMG.c.map(lp);return[a,b,{x:b.x+c.x-a.x,y:b.y+c.y-a.y},c];} // TL TR BR BL
+function setCorners(k){IMG.c=[toLL(k[0]),toLL(k[1]),toLL(k[3])];}
+function cen(){const k=corners();return{x:(k[0].x+k[2].x)/2,y:(k[0].y+k[2].y)/2};}
+const centre=()=>{const c=cen();return toLL(c);};
+function rotPts(pts,o,rad){const cs=Math.cos(rad),sn=Math.sin(rad);return pts.map(p=>({x:o.x+(p.x-o.x)*cs-(p.y-o.y)*sn,y:o.y+(p.x-o.x)*sn+(p.y-o.y)*cs}));}
+function knobPos(){const k=corners(),o=cen(),m={x:(k[0].x+k[1].x)/2,y:(k[0].y+k[1].y)/2},v={x:m.x-o.x,y:m.y-o.y},L0=Math.hypot(v.x,v.y)||1;
+  return{x:m.x+v.x/L0*48,y:m.y+v.y/L0*48};}
+function syncHandles(skip){
+  if(!IMG)return;const k=corners();
+  cornerMk.forEach((m,i)=>{if(m!==skip)m.setLatLng(toLL(IMG.free?[k[0],k[1],k[3]][i]:k[i]));});
+  if(mvHandle&&mvHandle!==skip)mvHandle.setLatLng(centre());
+  if(rotKnob&&rotKnob!==skip)rotKnob.setLatLng(toLL(knobPos()));
+  if(rotLine){const kp=rotKnob?lp(rotKnob.getLatLng()):knobPos();rotLine.setLatLngs([centre(),toLL(kp)]);}
+}
+function nudge(fn){if(!IMG||IMG.locked)return;setCorners(fn(corners()));placeImg();syncHandles();saveImg();}
+$('rotL').onclick=()=>nudge(k=>rotPts(k,cen(),-Math.PI/180));
+$('rotR').onclick=()=>nudge(k=>rotPts(k,cen(),Math.PI/180));
+$('sclD').onclick=()=>nudge(k=>{const o=cen();return k.map(p=>({x:o.x+(p.x-o.x)*.98,y:o.y+(p.y-o.y)*.98}));});
+$('sclU').onclick=()=>nudge(k=>{const o=cen();return k.map(p=>({x:o.x+(p.x-o.x)*1.02,y:o.y+(p.y-o.y)*1.02}));});
+$('freeMode').onchange=e=>{if(!IMG)return;IMG.free=e.target.checked;drawHandles();saveImg();};
 function drawHandles(){
-  handles.forEach(h=>map.removeLayer(h));handles=[];if(mvHandle){map.removeLayer(mvHandle);mvHandle=null;}
+  cornerMk.forEach(h=>map.removeLayer(h));cornerMk=[];handles=[];
+  [mvHandle,rotKnob,rotLine].forEach(h=>{if(h)map.removeLayer(h);});mvHandle=rotKnob=rotLine=null;
   $('imgTools').hidden=!IMG;
   $('autoRaster').hidden=!IMG||IMG.kind==='dxf';
   $('autoDxf').hidden=!IMG||IMG.kind!=='dxf'||!DXF;
   if(!IMG)return;
-  $('op').value=IMG.op;
+  $('op').value=IMG.op;$('freeMode').checked=!!IMG.free;
+  [...$('viewSeg').children].forEach(b=>b.classList.toggle('on',b.dataset.view===(IMG.view||'full')));renderHueChips();
   $('btnLock').textContent=IMG.locked?t('unlock'):t('lock');
   $('btnHideImg').textContent=IMG.hidden?t('show'):t('hide');
   if(IMG.locked||IMG.hidden)return;
-  IMG.c.forEach((c,i)=>{
-    handles.push(L.marker(c,{icon:div('hd','',16),draggable:true,zIndexOffset:2000}).addTo(map)
-      .on('drag',e=>{const ll=e.target.getLatLng();IMG.c[i]=[ll.lat,ll.lng];placeImg();mvHandle.setLatLng(centre());})
-      .on('dragend',saveImg));
+  const k0=corners(),pts=IMG.free?[k0[0],k0[1],k0[3]]:k0;
+  pts.forEach((p,i)=>{let st=null;
+    const m=L.marker(toLL(p),{icon:div('hd','',18),draggable:true,zIndexOffset:2000}).addTo(map)
+      .on('dragstart',()=>{st=corners();})
+      .on('drag',e=>{const q=lp(e.target.getLatLng());
+        if(IMG.free){const ci=[0,1,3][i];const k=st.slice();k[ci]=q;IMG.c=[toLL(k[0]),toLL(k[1]),toLL(k[3])];}
+        else{const A=st[(i+2)%4],v={x:st[i].x-A.x,y:st[i].y-A.y},w={x:q.x-A.x,y:q.y-A.y},f=Math.max(.02,(w.x*v.x+w.y*v.y)/((v.x*v.x+v.y*v.y)||1));
+          setCorners(st.map(P=>({x:A.x+(P.x-A.x)*f,y:A.y+(P.y-A.y)*f})));}
+        placeImg();syncHandles(m);})
+      .on('dragend',()=>{syncHandles();saveImg();});
+    cornerMk.push(m);handles.push(m);
   });
-  let prev;
-  mvHandle=L.marker(centre(),{icon:div('hd mv','✥',22),draggable:true,zIndexOffset:2000}).addTo(map)
-    .on('dragstart',e=>{prev=e.target.getLatLng();})
-    .on('drag',e=>{const ll=e.target.getLatLng(),dl=ll.lat-prev.lat,dg=ll.lng-prev.lng;prev=ll;
-      IMG.c=IMG.c.map(c=>[c[0]+dl,c[1]+dg]);handles.forEach((h,i)=>h.setLatLng(IMG.c[i]));placeImg();})
-    .on('dragend',saveImg);
+  let prev=null,moved=false;
+  mvHandle=L.marker(centre(),{icon:div('hd mv'+(hMode==='rotate'?' rotating':''),hMode==='rotate'?'⟳':'✥',26),draggable:hMode==='move',zIndexOffset:2100}).addTo(map)
+    .on('click',()=>{hMode=hMode==='move'?'rotate':'move';drawHandles();})
+    .on('dragstart',e=>{prev=lp(e.target.getLatLng());})
+    .on('drag',e=>{const q=lp(e.target.getLatLng()),dx=q.x-prev.x,dy=q.y-prev.y;prev=q;
+      setCorners(corners().map(P=>({x:P.x+dx,y:P.y+dy})));placeImg();syncHandles(mvHandle);})
+    .on('dragend',()=>{syncHandles();saveImg();});
+  if(hMode==='rotate'){
+    let o=null,a0=0,st=null;
+    rotLine=L.polyline([centre(),toLL(knobPos())],{color:'#fde047',weight:2,dashArray:'4 6',interactive:false}).addTo(map);
+    rotKnob=L.marker(toLL(knobPos()),{icon:div('hd rot','⟳',26),draggable:true,zIndexOffset:2200}).addTo(map)
+      .on('dragstart',e=>{o=cen();st=corners();const q=lp(e.target.getLatLng());a0=Math.atan2(q.y-o.y,q.x-o.x);})
+      .on('drag',e=>{const q=lp(e.target.getLatLng()),a=Math.atan2(q.y-o.y,q.x-o.x);setCorners(rotPts(st,o,a-a0));placeImg();syncHandles(rotKnob);})
+      .on('dragend',()=>{syncHandles();saveImg();});
+  }
 }
 map.on('zoomstart',()=>{if(imgEl)imgEl.style.visibility='hidden';});
 map.on('zoomend viewreset',()=>{placeImg();if(imgEl)imgEl.style.visibility='';});
@@ -1048,7 +1172,8 @@ function setPlan(cv,kind,keep,geoC){
   else{const sz=map.getSize(),ar=cv.height/cv.width;let W=sz.x*0.6,H=W*ar;if(H>sz.y*0.6){H=sz.y*0.6;W=H/ar;}
     const x0=(sz.x-W)/2,y0=(sz.y-H)/2;
     c=[[x0,y0],[x0+W,y0],[x0,y0+H]].map(p=>{const ll=map.containerPointToLatLng(p);return[ll.lat,ll.lng];});}
-  IMG={src,w:cv.width,h:cv.height,c,op:(keep||geoC)&&IMG?IMG.op:(kind==='dxf'?0.9:0.6),locked:false,hidden:false,kind};
+  const pv=IMG&&(keep||geoC)?{view:IMG.view,hueOff:IMG.hueOff,free:IMG.free}:{};
+  IMG={src,w:cv.width,h:cv.height,c,op:(keep||geoC)&&IMG?IMG.op:(kind==='dxf'?0.9:0.6),locked:false,hidden:false,kind,...pv};
   planCanvas=kind==='dxf'?null:cv;
   placeImg();drawHandles();saveImg();
 }
@@ -1493,11 +1618,11 @@ function parseLL(s){const m=String(s).match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?
   const lat=+m[1],lng=+m[2];return(Math.abs(lat)>90||Math.abs(lng)>180)?null:{lat,lng};}
 $('btnSearch').onclick=async()=>{
   const v=$('q').value.trim();if(!v)return;
-  const ll=parseLL(v);if(ll){map.setView([ll.lat,ll.lng],18);return;}
+  const ll=parseLL(v);if(ll){map.setView([ll.lat,ll.lng],18);dropPin(ll.lat,ll.lng,v);return;}
   try{const c=map.getCenter();
     const r=await fetch(`https://photon.komoot.io/api/?limit=1&lat=${c.lat}&lon=${c.lng}&q=`+encodeURIComponent(v));
     const d=await r.json();
-    if(d.features&&d.features.length){const [lng,lat]=d.features[0].geometry.coordinates;map.setView([lat,lng],17);}
+    if(d.features&&d.features.length){const f=d.features[0],[lng,lat]=f.geometry.coordinates;map.setView([lat,lng],17);dropPin(lat,lng,f.properties&&f.properties.name||v);}
     else setStatusText(t('notFoundLoc'),true);
   }catch(e){setStatusText(t('searchFail'),true);}
 };
@@ -1955,6 +2080,19 @@ if(NATIVE){
   });
 }
 
+/* ================= place pin (reference point for mapping) ================= */
+let placePin=null;
+function dropPin(lat,lng,name){
+  if(placePin)map.removeLayer(placePin);
+  const c=`${(+lat).toFixed(6)}, ${(+lng).toFixed(6)}`;
+  placePin=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="tpin"><span>📍</span></div>',iconSize:[40,48],iconAnchor:[20,46]}),zIndexOffset:1500}).addTo(map)
+    .bindTooltip(esc(String(name||'').slice(0,60)),{permanent:true,direction:'top',offset:[0,-46],className:'tl tpinlbl'})
+    .bindPopup(()=>`<b>${esc(name||'')}</b><br><span class="mono">${c}</span><div class="pbtns"><button class="blue" data-copy="${c}">${t('copy')}</button><button class="danger" data-pinx="1">${t('pinDel')}</button></div>`);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pinx]');if(b&&placePin){map.removeLayer(placePin);placePin=null;}});
+document.addEventListener('click',e=>{const b=e.target.closest('.leaflet-popup [data-copy]');if(!b)return;const v=b.dataset.copy;
+  (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>{b.textContent=t('copied');}).catch(()=>{});});
+
 /* ================= rearranged workflow helpers ================= */
 const tt=(...a)=>t(...a);
 function nextLabel(){const used=new Set(S.sensors.map(x=>x.label));let l;do{l=letter(S.nextLbl++);}while(used.has(l));return l;}
@@ -2005,14 +2143,14 @@ async function geocodePlace(name){
   const area=STREETS.find(n=>/^(TAMAN|KAMPUNG|BANDAR|DESA|SEKSYEN|PRESINT)/.test(n)&&n!==name);
   const qs=area&&!/^(TAMAN|KAMPUNG|BANDAR|DESA)/.test(name)?[name+' '+area,name]:[name];
   for(const q of qs){try{const r=await fetch('https://photon.komoot.io/api/?limit=1&bbox=99.6,0.8,119.3,7.4&q='+encodeURIComponent(q));const d=await r.json();
-    if(d.features&&d.features.length){const [lng,lat]=d.features[0].geometry.coordinates;return{lat,lng};}}catch(e){}}
+    if(d.features&&d.features.length){const f=d.features[0],[lng,lat]=f.geometry.coordinates;return{lat,lng,name:f.properties&&f.properties.name};}}catch(e){}}
   return null;
 }
 async function goPlace(name){
   if(!name)return;$('streetMsg').textContent=t('flying',name);
   const ll=await geocodePlace(name);
   if(!ll){$('streetMsg').textContent=t('geoNone',name);return;}
-  map.setView([ll.lat,ll.lng],18);
+  map.setView([ll.lat,ll.lng],18);dropPin(ll.lat,ll.lng,ll.name||name);
   setTimeout(()=>{if(IMG&&!IMG.locked)placePlanAtView();if(isMobile())setSheet('peek');},350);
   $('streetMsg').textContent=t('flying',name);
 }
