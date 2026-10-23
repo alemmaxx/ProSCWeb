@@ -70,6 +70,14 @@
   .status.act{background:rgba(245,158,11,.12);color:#fcd34d;border-color:rgba(245,158,11,.35)}
   .item{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;font-size:13px;padding:6px;border-radius:12px;background:var(--card2)}
   .item input:not([type=color]){padding:6px 9px;font-size:13px;border-radius:9px}
+  .sitem{display:grid;grid-template-columns:84px 1fr auto;gap:6px 8px;align-items:center;padding:8px;border-radius:12px;background:var(--card2)}
+  .sitem input{padding:6px 9px;font-size:13px;border-radius:9px}
+  .sitem .slbl{font-family:var(--head);font-weight:800;text-align:center;background:var(--sensor);border-color:var(--sensor);color:#fff}
+  .sitem .scoord{grid-column:1/2;grid-column:1/span 1}
+  .sitem .scoord{grid-column:1/3}
+  .sitem .sgo{padding:5px 10px;font-size:12.5px;min-height:0}
+  .sitem > span.mono{grid-column:1/3;font-size:12px}
+  #streetChips button{padding:6px 11px;font-size:13px;white-space:normal;text-align:left}
   .road{grid-column:2/5;font-size:12px;color:var(--muted);margin-top:-2px}
   .mono{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
   .muted{color:var(--muted)}
@@ -232,17 +240,6 @@
   </header>
 
   <div class="sec">
-    <h2><span class="n" style="--c:#22c55e">★</span><span data-i18n="proj"></span></h2>
-    <input id="projName" data-i18n-ph="projPh">
-    <div class="row">
-      <button class="pri big" id="btnSaveProj" data-i18n="saveProj"></button>
-      <button class="blue big" id="btnOpenProj" data-i18n="openProj"></button>
-      <input type="file" id="fileProj" accept=".html,.htm,.json" hidden>
-    </div>
-    <div id="projMsg" class="hint"></div>
-  </div>
-
-  <div class="sec">
     <div id="status" class="status"></div>
     <div class="row">
       <input id="q" data-i18n-ph="searchPh">
@@ -251,16 +248,28 @@
     </div>
   </div>
 
-  <!-- 1 PLAN -->
+  <!-- 1 PLAN + PIPES -->
   <div class="sec">
     <h2><span class="n" style="--c:#3b82f6">1</span><span data-i18n="s1"></span></h2>
     <label class="file"><span data-i18n="upload"></span><input type="file" id="fileImg" accept="image/*,.pdf,.dxf,.dwg"></label>
     <div id="loadMsg" class="hint"></div>
+
+    <div id="streetBox" class="sub" hidden>
+      <h3 data-i18n="streetsH"></h3>
+      <p class="hint" id="streetMsg"></p>
+      <div id="streetChips" class="row"></div>
+      <div class="row">
+        <input id="streetQ" data-i18n-ph="streetSearchPh">
+        <button class="blue" id="btnStreetGo" data-i18n="goPlace"></button>
+      </div>
+    </div>
+
     <div id="imgTools" hidden style="display:grid;gap:8px">
       <div id="pdfPageBox" class="row" hidden><span class="lab" data-i18n="pdfPage"></span><input id="pdfPage" type="number" min="1" value="1" style="width:80px;flex:none"><span id="pdfPages" class="muted"></span></div>
       <p class="hint" data-i18n="planHint"></p>
       <div class="lab"><span data-i18n="opacity"></span><input type="range" id="op" min="0.1" max="1" step="0.05"></div>
       <div class="row">
+        <button id="btnPlaceView" class="blue" data-i18n="placeAtView"></button>
         <button id="btnLock"></button>
         <button id="btnHideImg"></button>
         <button id="btnRecrop" class="orange" data-i18n="recrop" hidden></button>
@@ -291,33 +300,43 @@
       <div id="autoInfo" class="hint"></div>
       <button id="btnUndoAuto" hidden data-i18n="undoAuto"></button>
     </div>
+
+    <details class="set" id="pipeBox">
+      <summary><span data-i18n="manualPipes"></span> <span class="mono" id="pipeCount"></span></summary>
+      <div style="display:grid;gap:8px">
+        <p class="hint" data-i18n="s2Hint"></p>
+        <div class="row">
+          <button id="btnPipe" class="pri" data-i18n="drawPipe"></button>
+          <button id="btnPipeDone" hidden data-i18n="done"></button>
+          <button id="btnPipeUndo" hidden data-i18n="undoPt"></button>
+          <button id="btnVx"></button>
+          <button id="btnHidePipes"></button>
+          <button id="btnRoads" class="blue" data-i18n="roads"></button>
+        </div>
+        <div id="pipeList" class="scroll"></div>
+      </div>
+    </details>
   </div>
 
-  <!-- 2 PIPES -->
+  <!-- 2 SENSORS + LEAK -->
   <div class="sec">
-    <h2><span class="n" style="--c:#06b6d4">2</span><span data-i18n="s2"></span></h2>
-    <p class="hint" data-i18n="s2Hint"></p>
-    <div class="row">
-      <button id="btnPipe" class="pri" data-i18n="drawPipe"></button>
-      <button id="btnPipeDone" hidden data-i18n="done"></button>
-      <button id="btnPipeUndo" hidden data-i18n="undoPt"></button>
-      <button id="btnVx"></button>
-      <button id="btnRoads" class="blue" data-i18n="roads"></button>
-    </div>
-    <div id="pipeList" class="scroll"></div>
-  </div>
-
-  <!-- 3 SENSORS -->
-  <div class="sec">
-    <h2><span class="n" style="--c:#8b5cf6">3</span><span data-i18n="s3"></span></h2>
+    <h2><span class="n" style="--c:#8b5cf6">2</span><span data-i18n="s2"></span></h2>
     <p class="hint" data-i18n="s3Hint"></p>
-    <div class="row"><button id="btnSensor" class="pri"></button></div>
+    <div class="sub">
+      <h3 data-i18n="addSensorH"></h3>
+      <div class="row">
+        <input id="newLbl" style="flex:0 0 84px" data-i18n-ph="labelPh">
+        <input id="newCoord" data-i18n-ph="coordPh" inputmode="decimal">
+      </div>
+      <div class="row">
+        <button class="purple" id="btnAddSensor" data-i18n="addSensor"></button>
+        <button id="btnSensor" class="purple"></button>
+      </div>
+      <div id="sensorErr" class="err"></div>
+    </div>
     <div id="sensorList" class="scroll"></div>
-  </div>
 
-  <!-- 4 LEAK -->
-  <div class="sec">
-    <h2><span class="n" style="--c:#ef4444">4</span><span data-i18n="s4"></span></h2>
+    <h3 data-i18n="leakCalcH" style="margin-top:4px"></h3>
     <div class="grid2">
       <label><span data-i18n="sensorA"></span><select id="selA"></select></label>
       <label><span data-i18n="sensorB"></span><select id="selB"></select></label>
@@ -325,7 +344,7 @@
     <div id="abInfo" class="mono muted"></div>
     <div class="seg"><button id="mDist" class="on" data-i18n="mDist"></button><button id="mTime" data-i18n="mTime"></button></div>
     <div id="boxDist" class="grid2">
-      <label><span data-i18n="measFrom"></span><select id="ref"><option value="A" data-i18n="sensorA"></option><option value="B" data-i18n="sensorB"></option></select></label>
+      <label><span data-i18n="measFrom"></span><select id="ref"><option value="A"></option><option value="B"></option></select></label>
       <label><span data-i18n="distAlong"></span><input id="dA" type="number" step="0.1" data-i18n-ph="egDist"></label>
     </div>
     <div id="boxTime" hidden class="grid2">
@@ -341,13 +360,22 @@
     <div id="leakErr" class="err"></div>
     <div id="leakList" style="display:grid;gap:8px"></div>
     <input type="file" id="photoIn" accept="image/*" capture="environment" multiple hidden>
-    <details class="set">
-      <summary data-i18n="svSet"></summary>
-      <div style="display:grid;gap:8px">
-        <p class="hint" data-i18n="svSetHint"></p>
-        <input id="gKey" data-i18n-ph="svKeyPh" autocomplete="off">
-      </div>
-    </details>
+  </div>
+
+  <!-- 3 PROJECT + LIBRARY -->
+  <div class="sec">
+    <h2><span class="n" style="--c:#22c55e">3</span><span data-i18n="s3"></span></h2>
+    <input id="projName" data-i18n-ph="projPh">
+    <div class="row">
+      <button class="pri big" id="btnSaveLib" data-i18n="saveLib"></button>
+      <button class="blue" id="btnOpenLib" data-i18n="openLib"></button>
+    </div>
+    <div class="row">
+      <button class="pri" id="btnSaveProj" data-i18n="saveProj"></button>
+      <button class="blue" id="btnOpenProj" data-i18n="openProj"></button>
+      <input type="file" id="fileProj" accept=".html,.htm,.json" hidden>
+    </div>
+    <div id="projMsg" class="hint"></div>
   </div>
 
   <div class="sec">
@@ -477,10 +505,14 @@ const T={
   pick:'🎯 Ambil warna dari pelan',colTol:'Toleransi warna',pipeName:'Nama paip',pipeNamePh:'cth Paip utama 300mm',detect:'⚡ Kesan paip',
   dxfH:'Lapisan (layer) dalam DXF',dxfHint:'Tanda lapisan yang mengandungi paip. Lapisan bernama PIPE, PAIP, WATER atau MAIN sudah ditanda.',dxfConvert:'⚡ Tukar lapisan ditanda jadi paip',
   undoAuto:'↶ Buang hasil kesan terakhir',
-  s2:'Laluan paip',s2Hint:'Lukis sendiri: tekan "Lukis paip", klik setiap selekoh, kemudian "Siap" atau double-click. Paip yang hujungnya berdekatan (≤ 2 m) dikira bersambung.',
+  manualPipes:'✏️ Lukis paip manual',hidePipes:'🙈 Sorok paip',showPipes:'👁 Tunjuk paip',placeAtView:'🎯 Letak pelan di skrin',
+  streetsH:'🛣 Nama jalan dalam drawing',streetSearchPh:'Taip nama jalan / taman',goPlace:'📍 Pergi & letak pelan',streetsFound:n=>`${n} nama dikesan. Tekan untuk pergi ke lokasi & letak pelan di situ.`,ocrBusy:'Membaca teks dalam drawing (OCR)…',ocrNone:'Tiada nama jalan dikesan. Taip nama jalan untuk pergi ke lokasi.',ocrFail:'Tidak dapat membaca teks drawing. Taip nama jalan untuk pergi ke lokasi.',flying:n=>`Pergi ke ${n}… laraskan pelan dengan 3 titik kuning.`,geoNone:n=>`“${n}” tidak dijumpai. Cuba nama lain atau tambah nama taman/bandar.`,
+  addSensorH:'➕ Tambah sensor ikut koordinat',labelPh:'Nama',coordPh:'Koordinat: 3.073300, 101.519140',addSensor:'➕ Tambah',coordBad:'Format koordinat: lat, lng (cth 3.073300, 101.519140)',straight:' (garis lurus)',leakCalcH:'💧 Kira lokasi bocor',
+  saveLib:'📚 Simpan ke library',openLib:'📂 Buka library',goSensor:'Pergi',
+  s2:'Sensor & lokasi bocor',s2Hint:'Lukis sendiri: tekan "Lukis paip", klik setiap selekoh, kemudian "Siap" atau double-click. Paip yang hujungnya berdekatan (≤ 2 m) dikira bersambung.',
   drawPipe:'✏️ Lukis paip',done:'✔ Siap',undoPt:'↶ Undo titik',vxShow:'👁 Titik edit',vxHide:'🙈 Sorok titik',roads:'🛣 Kenal pasti jalan',
-  s3:'Sensor / noise logger',s3Hint:'Tekan "Letak sensor" dan klik dekat paip. Sensor melekat pada paip terdekat.',placeSensor:'📍 Letak sensor',stopSensor:'⏹ Berhenti letak sensor',
-  s4:'Kira lokasi bocor',sensorA:'Sensor A',sensorB:'Sensor B',mDist:'📏 Jarak terus',mTime:'⏱ Kira dari Δt',measFrom:'Diukur dari',distAlong:'Jarak ikut paip (m)',egDist:'cth 2',egDt:'cth 12.4',
+  s3:'Projek & library',s3Hint:'Masukkan koordinat logger, atau tekan "Letak di peta". Nama sensor boleh ditukar (cth V12, Hidran 3). Sensor dekat paip (≤ 15 m) dikira ikut laluan paip; jika tiada paip, ikut garis lurus.',placeSensor:'📍 Letak di peta',stopSensor:'⏹ Berhenti',
+  s4:'Kira lokasi bocor',sensorA:'Sensor pertama',sensorB:'Sensor kedua',mDist:'📏 Jarak terus',mTime:'⏱ Kira dari Δt',measFrom:'Diukur dari',distAlong:'Jarak (m)',egDist:'cth 2',egDt:'cth 12.4',
   vel:'Halaju bunyi (m/s)',dtHint:'Δt = masa bunyi sampai B tolak masa sampai A. Halaju lazim: besi/keluli ≈ 1200, AC ≈ 1000, PVC ≈ 450, HDPE ≈ 350 m/s.',
   tol:'Toleransi (m)',markLeak:'💧 Tandakan bocor',csv:'📊 Export CSV',fit:'🔎 Zoom semua',clear:'🗑 Padam semua',clearQ:'Padam paip, sensor dan bocor?',yes:'✔ Ya',no:'✖ Tidak',
   pipeDefault:n=>'Paip '+n,noPipes:'Belum ada paip.',noSensors:'Belum ada sensor.',pipeColour:'Warna paip',delPipe:'Padam paip',delSensor:'Padam sensor',
@@ -491,10 +523,10 @@ const T={
   needPipe:'Lukis atau kesan paip dahulu sebelum letak sensor.',allRoads:'Semua paip sudah ada nama jalan.',findingRoads:(n,t)=>`Mengenal pasti jalan… ${n}/${t}`,
   noPipeNet:'Tiada paip.',noRoute:(a,b)=>`Tiada laluan paip bersambung antara ${a} dan ${b}.`,notFound:'Sensor tidak dijumpai.',
   outRange:(x,a,b,d)=>`Jarak${x?' '+x:''} di luar julat paip ${a}–${b} (${d}).`,
-  need2:'Perlu sekurang-kurangnya 2 sensor.',pick2:'Pilih dua sensor berbeza.',pathAB:(a,b,d)=>`Jarak ikut paip ${a} → ${b}: ${d}`,
+  need2:'Perlu sekurang-kurangnya 2 sensor.',pick2:'Pilih dua sensor berbeza.',pathAB:(a,b,d)=>`Jarak ${a} → ${b}: ${d}`,viaPipe:' (ikut paip)',
   fromA:(a,D,v,dt,x)=>`Jarak dari ${a} = (${D} − ${v}×${dt}) / 2 = ${x} m`,
   errPick:'Pilih sensor A dan B yang berbeza.',errDist:'Masukkan jarak ikut paip.',errTime:'Masukkan halaju dan Δt.',
-  leakN:n=>'Bocor '+n,leakTarget:'Sasaran bocor',fromTo:(d,a,b)=>`${d} dari ${a} ke arah ${b}`,pipeAB:(a,b,d,t)=>`paip ${a}–${b} ${d}, ± ${t} m`,
+  leakN:n=>'Bocor '+n,leakTarget:'Sasaran bocor',fromTo:(d,a,b)=>`${d} dari ${a} ke arah ${b}`,pipeAB:(a,b,d,t)=>`${a}–${b} ${d}, ± ${t} m`,
   openG:'Buka di Google Maps',zoomHere:'Zoom ke sini',copy:'📋 Salin',copied:'✅ Disalin',
   tooBig:'Pelan terlalu besar untuk disimpan dalam browser. Ia akan hilang bila refresh; paip, sensor & bocor tetap disimpan.',
   dwg:'Fail DWG ialah format tertutup Autodesk dan tidak boleh dibaca terus dalam browser. Buka dalam AutoCAD atau DWG TrueView (percuma), pilih Save As → DXF (atau Plot → PDF), kemudian upload fail itu.',
@@ -509,7 +541,7 @@ const T={
   notFoundLoc:'Lokasi tidak dijumpai.',searchFail:'Carian gagal. Cuba masukkan koordinat lat, lng.',locFail:'Tidak dapat lokasi. Benarkan akses lokasi dalam browser.',
   dxfReload:'Untuk kesan lapisan DXF semula selepas refresh, upload fail DXF sekali lagi.',
   layers:{hyb:'Satelit + nama tempat',sat:'Satelit',st:'Peta jalan',topo:'Topo'},
-  waBtn:'💬 WhatsApp',waMsg:o=>`🚨 *SASARAN BOCOR*${o.proj?' · '+o.proj:''}\n${o.road?'📍 '+o.road+'\n':''}🧭 Koordinat: ${o.ll}\n📏 ${o.dist} dari sensor ${o.from} ke arah ${o.to} (± ${o.tol} m)\n🗺 Google Maps: ${o.gm}\n👁 Street View: ${o.sv}\n_POI Noise Logger by ProKuiz_`,
+  waBtn:'💬 WhatsApp',waMsg:o=>`🚨 *SASARAN BOCOR*${o.proj?' · '+o.proj:''}\n${o.road?'📍 '+o.road+'\n':''}🧭 Koordinat: ${o.ll}\n📏 ${o.dist} dari sensor ${o.from} ke arah ${o.to} (± ${o.tol} m)\n🗺 Google Maps: ${o.gm}\n_POI Noise Logger by ProKuiz_`,
   sv:'👁 Street View',svHere:'🏙 Lihat di sini',svTitle:'🏙 Street View · lokasi bocor',svOpenG:'Buka di Google Maps',svNoPano:'Jika Street View tidak dipaparkan, tiada imej jalan berdekatan titik ini. Cuba butang Street View untuk lokasi terdekat.',svLoading:'Memuat Street View…',svNone:'Tiada Street View dalam lingkungan 400 m dari titik bocor.',svJsFail:'Maps JavaScript API tidak dapat dimuat (semak key & API diaktifkan). Dipaparkan tanpa tanda bocor.',svDist:(d,tol)=>`📍 Tanda berkelip = anggaran lokasi bocor · ${d} m dari kamera · toleransi ± ${tol} m. Kamera berpusing menghadap tanda bila anda bergerak.`,
   svSet:'⚙️ Street View dalam alat (pilihan)',svSetHint:'Masukkan Google Maps API key (aktifkan Maps JavaScript API) untuk lihat Street View dalam pop-up dengan tanda bocor berkelip. Tanpa key, butang 👁 Street View tetap membuka Google Maps.',svKeyPh:'Google Maps API key',
   photoAdd:'📷 Gambar tapak',photoTitle:n=>`📷 Gambar tapak · Bocor ${n}`,photoDel:'🗑 Padam gambar',photoPrev:'◀',photoNext:'▶',photoErr:'Gambar terlalu besar untuk disimpan. Cuba kurangkan bilangan gambar.',
@@ -553,10 +585,14 @@ const T={
   pick:'🎯 Pick colour from plan',colTol:'Colour tolerance',pipeName:'Pipe name',pipeNamePh:'e.g. Main 300mm',detect:'⚡ Detect pipes',
   dxfH:'Layers in the DXF',dxfHint:'Tick the layers that contain pipes. Layers named PIPE, PAIP, WATER or MAIN are already ticked.',dxfConvert:'⚡ Convert ticked layers to pipes',
   undoAuto:'↶ Remove last detection',
-  s2:'Pipe route',s2Hint:'Draw manually: press "Draw pipe", click at every bend, then "Done" or double-click. Pipes whose ends are close (≤ 2 m) count as connected.',
+  manualPipes:'✏️ Draw pipes manually',hidePipes:'🙈 Hide pipes',showPipes:'👁 Show pipes',placeAtView:'🎯 Place plan on screen',
+  streetsH:'🛣 Street names in the drawing',streetSearchPh:'Type street / taman name',goPlace:'📍 Go & place plan',streetsFound:n=>`${n} names detected. Tap one to go there & place the plan.`,ocrBusy:'Reading text in the drawing (OCR)…',ocrNone:'No street names detected. Type a street name to go there.',ocrFail:'Could not read the drawing text. Type a street name to go there.',flying:n=>`Going to ${n}… align the plan with the 3 yellow points.`,geoNone:n=>`“${n}” not found. Try another name or add the taman/town.`,
+  addSensorH:'➕ Add sensor by coordinates',labelPh:'Name',coordPh:'Coordinates: 3.073300, 101.519140',addSensor:'➕ Add',coordBad:'Coordinate format: lat, lng (e.g. 3.073300, 101.519140)',straight:' (straight line)',leakCalcH:'💧 Locate leak',
+  saveLib:'📚 Save to library',openLib:'📂 Open library',goSensor:'Go',
+  s2:'Sensors & leak location',s2Hint:'Draw manually: press "Draw pipe", click at every bend, then "Done" or double-click. Pipes whose ends are close (≤ 2 m) count as connected.',
   drawPipe:'✏️ Draw pipe',done:'✔ Done',undoPt:'↶ Undo point',vxShow:'👁 Edit points',vxHide:'🙈 Hide points',roads:'🛣 Identify roads',
-  s3:'Sensors / noise loggers',s3Hint:'Press "Place sensor" and click near a pipe. The sensor snaps to the nearest pipe.',placeSensor:'📍 Place sensor',stopSensor:'⏹ Stop placing sensors',
-  s4:'Locate leak',sensorA:'Sensor A',sensorB:'Sensor B',mDist:'📏 Direct distance',mTime:'⏱ From Δt',measFrom:'Measured from',distAlong:'Distance along pipe (m)',egDist:'e.g. 2',egDt:'e.g. 12.4',
+  s3:'Project & library',s3Hint:'Enter the logger coordinates, or press "Place on map". Sensor names can be changed (e.g. V12, Hydrant 3). Sensors near a pipe (≤ 15 m) use the pipe route; without pipes, a straight line.',placeSensor:'📍 Place on map',stopSensor:'⏹ Stop',
+  s4:'Locate leak',sensorA:'First sensor',sensorB:'Second sensor',mDist:'📏 Direct distance',mTime:'⏱ From Δt',measFrom:'Measured from',distAlong:'Distance (m)',egDist:'e.g. 2',egDt:'e.g. 12.4',
   vel:'Sound velocity (m/s)',dtHint:'Δt = arrival time at B minus arrival time at A. Typical velocity: iron/steel ≈ 1200, AC ≈ 1000, PVC ≈ 450, HDPE ≈ 350 m/s.',
   tol:'Tolerance (m)',markLeak:'💧 Mark leak',csv:'📊 Export CSV',fit:'🔎 Zoom to all',clear:'🗑 Clear all',clearQ:'Delete pipes, sensors and leaks?',yes:'✔ Yes',no:'✖ No',
   pipeDefault:n=>'Pipe '+n,noPipes:'No pipes yet.',noSensors:'No sensors yet.',pipeColour:'Pipe colour',delPipe:'Delete pipe',delSensor:'Delete sensor',
@@ -567,10 +603,10 @@ const T={
   needPipe:'Draw or detect a pipe before placing sensors.',allRoads:'All pipes already have road names.',findingRoads:(n,t)=>`Identifying roads… ${n}/${t}`,
   noPipeNet:'No pipes.',noRoute:(a,b)=>`No connected pipe route between ${a} and ${b}.`,notFound:'Sensor not found.',
   outRange:(x,a,b,d)=>`Distance${x?' '+x:''} is outside pipe ${a}–${b} (${d}).`,
-  need2:'At least 2 sensors are needed.',pick2:'Choose two different sensors.',pathAB:(a,b,d)=>`Distance along pipe ${a} → ${b}: ${d}`,
+  need2:'At least 2 sensors are needed.',pick2:'Choose two different sensors.',pathAB:(a,b,d)=>`Distance ${a} → ${b}: ${d}`,viaPipe:' (along pipe)',
   fromA:(a,D,v,dt,x)=>`Distance from ${a} = (${D} − ${v}×${dt}) / 2 = ${x} m`,
   errPick:'Choose two different sensors A and B.',errDist:'Enter the distance along the pipe.',errTime:'Enter the velocity and Δt.',
-  leakN:n=>'Leak '+n,leakTarget:'Leak target',fromTo:(d,a,b)=>`${d} from ${a} towards ${b}`,pipeAB:(a,b,d,t)=>`pipe ${a}–${b} ${d}, ± ${t} m`,
+  leakN:n=>'Leak '+n,leakTarget:'Leak target',fromTo:(d,a,b)=>`${d} from ${a} towards ${b}`,pipeAB:(a,b,d,t)=>`${a}–${b} ${d}, ± ${t} m`,
   openG:'Open in Google Maps',zoomHere:'Zoom here',copy:'📋 Copy',copied:'✅ Copied',
   tooBig:'The plan is too large to store in the browser. It will be lost on refresh; pipes, sensors and leaks are still saved.',
   dwg:'DWG is a closed Autodesk format and cannot be read directly in a browser. Open it in AutoCAD or DWG TrueView (free), choose Save As → DXF (or Plot → PDF), then upload that file.',
@@ -585,7 +621,7 @@ const T={
   notFoundLoc:'Location not found.',searchFail:'Search failed. Try entering lat, lng coordinates.',locFail:'Could not get location. Allow location access in the browser.',
   dxfReload:'To detect DXF layers again after a refresh, upload the DXF file again.',
   layers:{hyb:'Satellite + place names',sat:'Satellite',st:'Street map',topo:'Topo'},
-  waBtn:'💬 WhatsApp',waMsg:o=>`🚨 *LEAK TARGET*${o.proj?' · '+o.proj:''}\n${o.road?'📍 '+o.road+'\n':''}🧭 Coordinates: ${o.ll}\n📏 ${o.dist} from sensor ${o.from} towards ${o.to} (± ${o.tol} m)\n🗺 Google Maps: ${o.gm}\n👁 Street View: ${o.sv}\n_POI Noise Logger by ProKuiz_`,
+  waBtn:'💬 WhatsApp',waMsg:o=>`🚨 *LEAK TARGET*${o.proj?' · '+o.proj:''}\n${o.road?'📍 '+o.road+'\n':''}🧭 Coordinates: ${o.ll}\n📏 ${o.dist} from sensor ${o.from} towards ${o.to} (± ${o.tol} m)\n🗺 Google Maps: ${o.gm}\n_POI Noise Logger by ProKuiz_`,
   sv:'👁 Street View',svHere:'🏙 View here',svTitle:'🏙 Street View · leak location',svOpenG:'Open in Google Maps',svNoPano:'If Street View does not show, there is no street imagery near this point. Try the Street View button for the nearest location.',svLoading:'Loading Street View…',svNone:'No Street View within 400 m of the leak point.',svJsFail:'The Maps JavaScript API could not load (check the key and that the API is enabled). Shown without the leak marker.',svDist:(d,tol)=>`📍 Blinking marker = estimated leak location · ${d} m from camera · tolerance ± ${tol} m. The camera turns to face the marker as you move.`,
   svSet:'⚙️ Street View inside the tool (optional)',svSetHint:'Enter a Google Maps API key (enable the Maps JavaScript API) to view Street View in a pop-up with a blinking leak marker. Without a key, the 👁 Street View button still opens Google Maps.',svKeyPh:'Google Maps API key',
   photoAdd:'📷 Site photos',photoTitle:n=>`📷 Site photos · Leak ${n}`,photoDel:'🗑 Delete photo',photoPrev:'◀',photoNext:'▶',photoErr:'The photos are too large to store. Try fewer photos.',
@@ -714,12 +750,14 @@ function along(path,s){
   return path[0];
 }
 const sensorById=id=>S.sensors.find(x=>x.id===id);
+const SNAPMAX=15;
 function routeAB(A,B){
   const sa=snap(A),sb=snap(B);
-  if(!sa||!sb)return{err:t('noPipeNet')};
-  const g=buildGraph([sa,sb]),r=dijkstra(g,g.ex[0],g.ex[1]);
-  if(!r)return{err:t('noRoute',A.label,B.label)};
-  return r;
+  if(sa&&sb&&sa.d<=SNAPMAX&&sb.d<=SNAPMAX){
+    const g=buildGraph([sa,sb]),r=dijkstra(g,g.ex[0],g.ex[1]);
+    if(r)return r;
+  }
+  return{D:d2(A,B),path:[{lat:A.lat,lng:A.lng},{lat:B.lat,lng:B.lng}],straight:true};
 }
 function computeLeak(lk){
   const A=sensorById(lk.a),B=sensorById(lk.b);
@@ -783,7 +821,7 @@ const vxOn=()=>S.showVx==null?totalPts()<=400:S.showVx;
 function draw(){
   G.clearLayers();
   const showVx=vxOn();
-  S.pipes.forEach(p=>{
+  if(!S.hidePipes)S.pipes.forEach(p=>{
     const col=p.color||COL.pipe;
     const line=L.polyline(p.pts.map(q=>[q.lat,q.lng]),{color:col,weight:5,opacity:.95})
       .bindTooltip(()=>`${esc(p.name)} · ${fmt(pipeLen(p))}${p.road?' · '+esc(p.road):''}`,{sticky:true,className:'tl'}).addTo(G);
@@ -794,10 +832,9 @@ function draw(){
     });
   });
   S.sensors.forEach(se=>{
-    const sn=snap(se);if(sn){se.lat=sn.lat;se.lng=sn.lng;}
     L.marker([se.lat,se.lng],{icon:L.divIcon({className:'',html:`<div class="mk" style="background:${COL.sensor}">${esc(se.label)}</div>`,iconSize:[24,24],iconAnchor:[12,12]}),draggable:true,zIndexOffset:500}).addTo(G)
       .bindTooltip(`${esc(se.label)}${se.name?' · '+esc(se.name):''}`,{className:'tl',direction:'top',offset:[0,-12]})
-      .on('dragend',e=>{const ll=e.target.getLatLng(),s2=snap(ll);se.lat=s2?s2.lat:ll.lat;se.lng=s2?s2.lng:ll.lng;save();draw();});
+      .on('dragend',e=>{const ll=e.target.getLatLng(),s2=snap(ll),on=s2&&s2.d<=SNAPMAX;se.lat=on?s2.lat:ll.lat;se.lng=on?s2.lng:ll.lng;se.free=!on;save();draw();});
   });
   S.leaks.forEach(lk=>{
     const r=computeLeak(lk);if(r.err)return;
@@ -807,7 +844,7 @@ function draw(){
     const from=lk.ref==='B'?r.B:r.A,to=lk.ref==='B'?r.A:r.B,raw=lk.raw??lk.dA;
     const mk=L.marker([r.lat,r.lng],{icon:L.divIcon({className:'',html:'<div class="leakwrap"><span class="ring"></span><span class="ring r2"></span><div class="leak">!</div></div>',iconSize:[60,60],iconAnchor:[30,30]}),zIndexOffset:1000}).addTo(G)
       .bindPopup(()=>`<b style="color:${COL.leak}">${t('leakTarget')}</b><br>${t('fromTo',fmt(raw),esc(from.label),esc(to.label))}${lk.road?'<br>'+esc(lk.road):''}<br><span style="font-family:var(--mono);font-size:14px">${r.lat.toFixed(6)}, ${r.lng.toFixed(6)}</span><br><a href="${gmap(r.lat,r.lng)}" target="_blank" rel="noopener">${t('openG')}</a>
-      <div class="pbtns"><a class="abtn wa" href="${waUrl(lk,r)}" target="_blank" rel="noopener">${t('waBtn')}</a><a class="abtn" href="${svUrl(r.lat,r.lng)}" target="_blank" rel="noopener">${t('sv')}</a>${gKey()?`<button class="purple" data-svhere="${lk.id}">${t('svHere')}</button>`:''}</div>`);
+      <div class="pbtns"><a class="abtn wa" href="${waUrl(lk,r)}" target="_blank" rel="noopener">${t('waBtn')}</a></div>`);
     mk._leakId=lk.id;
   });
   if(draft.length){
@@ -815,9 +852,10 @@ function draw(){
     draft.forEach(q=>L.marker([q.lat,q.lng],{icon:div('vx','',12),interactive:false}).addTo(G));
   }
   $('btnVx').textContent=showVx?t('vxHide'):t('vxShow');
+  $('btnHidePipes').textContent=S.hidePipes?t('showPipes'):t('hidePipes');$('pipeCount').textContent=S.pipes.length?'('+S.pipes.length+')':'';
   renderSide();
 }
-function resnapAll(){S.sensors.forEach(se=>{const sn=snap(se);if(sn){se.lat=sn.lat;se.lng=sn.lng;}});}
+function resnapAll(){S.sensors.forEach(se=>{if(se.free)return;const sn=snap(se);if(sn&&sn.d<=SNAPMAX){se.lat=sn.lat;se.lng=sn.lng;}});}
 
 /* ================= side panel ================= */
 function renderSide(){
@@ -826,11 +864,13 @@ function renderSide(){
       <input data-pipe="${i}" value="${esc(p.name)}"><span class="mono">${fmt(pipeLen(p))}</span>
       <button class="x" data-delpipe="${i}" title="${t('delPipe')}">✕</button>
       ${p.road?`<span class="road">${esc(p.road)}</span>`:''}</div>`).join('')||`<span class="hint">${t('noPipes')}</span>`;
-  $('sensorList').innerHTML=S.sensors.map((s,i)=>{const sn=snap(s);return `<div class="item">
-      <span class="chip" style="background:${COL.sensor}">${esc(s.label)}</span>
-      <input data-sen="${i}" value="${esc(s.name)}" placeholder="${t('sensorNamePh')}">
-      <span class="mono muted" title="${t('chTitle')}">${sn?'CH '+sn.s.toFixed(1):'—'}</span>
-      <button class="x" data-delsen="${i}" title="${t('delSensor')}">✕</button></div>`;}).join('')||`<span class="hint">${t('noSensors')}</span>`;
+  $('sensorList').innerHTML=S.sensors.map((s,i)=>{const sn=snap(s),on=sn&&sn.d<=SNAPMAX;return `<div class="sitem">
+      <input class="slbl" data-slbl="${i}" value="${esc(s.label)}" aria-label="${t('labelPh')}">
+      <input data-sen="${i}" value="${esc(s.name||'')}" placeholder="${t('sensorNamePh')}">
+      <button class="x" data-delsen="${i}" title="${t('delSensor')}">✕</button>
+      <input class="mono scoord" data-scoord="${i}" value="${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}" inputmode="decimal">
+      <button class="blue sgo" data-sgo="${i}">${t('goSensor')}</button>
+      ${on?`<span class="mono muted" title="${t('chTitle')}">CH ${sn.s.toFixed(1)} m</span>`:''}</div>`;}).join('')||`<span class="hint">${t('noSensors')}</span>`;
   const opts=S.sensors.map(s=>`<option value="${s.id}">${esc(s.label)}${s.name?' · '+esc(s.name):''}</option>`).join('');
   const a=$('selA').value,b=$('selB').value;
   $('selA').innerHTML=opts;$('selB').innerHTML=opts;
@@ -846,8 +886,6 @@ function renderSide(){
       <span><a href="${gmap(r.lat,r.lng)}" target="_blank" rel="noopener">${t('openG')}</a> · <a href="#" data-zoom="${i}">${t('zoomHere')}</a></span>
       <div class="leakact">
         <a class="abtn wa" href="${waUrl(lk,r)}" target="_blank" rel="noopener">${t('waBtn')}</a>
-        <a class="abtn" href="${svUrl(r.lat,r.lng)}" target="_blank" rel="noopener">${t('sv')}</a>
-        ${gKey()?`<button class="blue" data-svhere="${lk.id}">${t('svHere')}</button>`:''}
         <button class="orange" data-photoadd="${lk.id}">${t('photoAdd')}</button>
         <button class="purple" data-sim="${i}">${t('simBtn')}</button>
       </div>
@@ -860,11 +898,13 @@ aside.addEventListener('input',e=>{
   const t=e.target,d=t.dataset;
   if(d.pipe!==undefined){S.pipes[+d.pipe].name=t.value;save();}
   if(d.sen!==undefined){S.sensors[+d.sen].name=t.value;save();}
+  if(d.slbl!==undefined){S.sensors[+d.slbl].label=t.value.trim()||'?';save();}
 });
 aside.addEventListener('change',e=>{
   const t=e.target,d=t.dataset;
   if(d.pcol!==undefined){S.pipes[+d.pcol].color=t.value;save();draw();}
-  else if(d.sen!==undefined||d.pipe!==undefined)draw();
+  else if(d.scoord!==undefined){const ll=parseLL(t.value),se=S.sensors[+d.scoord];if(ll){se.lat=ll.lat;se.lng=ll.lng;se.free=true;$('sensorErr').textContent='';save();draw();}else{$('sensorErr').textContent=tt('coordBad');}}
+  else if(d.sen!==undefined||d.pipe!==undefined||d.slbl!==undefined)draw();
 });
 aside.addEventListener('click',e=>{
   const d=e.target.dataset;
@@ -872,6 +912,7 @@ aside.addEventListener('click',e=>{
   if(d.delsen!==undefined){const id=S.sensors[+d.delsen].id;S.sensors.splice(+d.delsen,1);S.leaks=S.leaks.filter(l=>l.a!==id&&l.b!==id);save();draw();}
   if(d.delleak!==undefined){S.leaks.splice(+d.delleak,1);save();draw();}
   if(d.sim!==undefined){openSim(S.leaks[+d.sim]);return;}
+  if(d.sgo!==undefined){const se=S.sensors[+d.sgo];if(se)map.setView([se.lat,se.lng],19);}
   if(d.zoom!==undefined){e.preventDefault();const lk=S.leaks[+d.zoom];if(lk.lat!=null)map.setView([lk.lat,lk.lng],19);}
   if(d.copy!==undefined){const b=e.target,done=()=>{b.textContent=t('copied');setTimeout(()=>b.textContent=t('copy'),1500);};
     (navigator.clipboard?navigator.clipboard.writeText(d.copy):Promise.reject()).then(done).catch(()=>{
@@ -888,7 +929,8 @@ function calc(){
   SEL.clearLayers();
   const c=currentAB();
   $('abInfo').textContent=!c?(S.sensors.length<2?t('need2'):t('pick2'))
-    :c.err?c.err:t('pathAB',c.A.label,c.B.label,fmt(c.D));
+    :c.err?c.err:t('pathAB',c.A.label,c.B.label,fmt(c.D))+(c.straight?t('straight'):t('viaPipe'));
+  const ro=$('ref').options;ro[0].textContent=c&&c.A?c.A.label:'—';ro[1].textContent=c&&c.B?c.B.label:'—';
   if(c&&!c.err)L.polyline(c.path.map(q=>[q.lat,q.lng]),{color:'#ffd43b',weight:3,dashArray:'2 8',interactive:false}).addTo(SEL);
   $('calcOut').textContent='';
   if(calcMode==='time'&&c&&!c.err){
@@ -921,9 +963,8 @@ map.on('click',e=>{
   const ll={lat:e.latlng.lat,lng:e.latlng.lng};
   if(mode==='pipe'){draft.push(ll);draw();}
   else if(mode==='sensor'){
-    if(!S.pipes.length){setStatusText(t('needPipe'),true);return;}
-    const sn=snap(ll);
-    S.sensors.push({id:uid(),label:letter(S.nextLbl++),name:'',lat:sn.lat,lng:sn.lng});save();draw();
+    const sn=snap(ll),on=sn&&sn.d<=25;
+    S.sensors.push({id:uid(),label:nextLabel(),name:'',lat:on?sn.lat:ll.lat,lng:on?sn.lng:ll.lng,free:!on});save();draw();
   }
   else if(mode==='pick')pickColour(ll);
 });
@@ -1102,7 +1143,7 @@ function runAuto(){
   $('cropInfo').textContent=res.tb?t('cropFound'):res.frame?t('cropFrame'):t('cropNone');
 }
 function openCrop(o){
-  SRC={kind:o.kind,canvas:o.canvas||null,raw:o.raw||null,keep:o.keep};
+  SRC={kind:o.kind,canvas:o.canvas||null,raw:o.raw||null,keep:o.keep,pdfText:o.pdfText||null};
   $('cropLayerBox').hidden=o.kind!=='dxf';$('cropSizeBox').hidden=o.kind==='dxf';
   $('cropModal').hidden=false;$('cropInfo').textContent='';
   cropPreviewSrc();SRC.rect=[0,0,SRC.canvas.width,SRC.canvas.height];
@@ -1146,6 +1187,7 @@ function applyCrop(full){
   IMG.crop=r;IMG.cropK=k;IMG.cropKind=SRC.kind;saveImg();
   if(SRC.kind==='dxf'){renderLayers();msg(t('dxfLoaded',DXF.lines.length,Object.keys(DXF.byLayer).length));}
   LASTSRC=SRC;$('btnRecrop').hidden=false;
+  if(!SRC.recrop)detectStreetNames(SRC,!SRC.keep);
   $('cropModal').hidden=true;
 }
 let LASTSRC=null;
@@ -1174,7 +1216,9 @@ async function renderPdfPage(n,keep){
   const cv=document.createElement('canvas');cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);
   const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);
   await page.render({canvasContext:cx,viewport:vp}).promise;
-  openCrop({kind:'raster',canvas:cv,keep});
+  let pdfText=[];try{const tc=await page.getTextContent();const rows={};tc.items.forEach(it=>{const y=Math.round(it.transform[5]/3);(rows[y]=rows[y]||[]).push(it);});
+    pdfText=Object.values(rows).map(r=>r.sort((a,b)=>a.transform[4]-b.transform[4]).map(i=>i.str).join(' '));}catch(e){}
+  openCrop({kind:'raster',canvas:cv,keep,pdfText});
   $('pdfPageBox').hidden=pdfDoc.numPages<2;
   msg(t('pdfLoaded',n));
 }
@@ -1675,8 +1719,6 @@ function waUrl(lk,r){const from=lk.ref==='B'?r.B:r.A,to=lk.ref==='B'?r.A:r.B;
   return 'https://wa.me/?text='+encodeURIComponent(txt);}
 const svUrl=(lat,lng)=>`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat.toFixed(6)},${lng.toFixed(6)}`;
 function gKey(){try{return(localStorage.getItem('poi-gkey')||'').trim();}catch(e){return'';}}
-$('gKey').value=gKey();
-$('gKey').addEventListener('change',e=>{try{localStorage.setItem('poi-gkey',e.target.value.trim());}catch(_){}renderSide();});
 let photoTarget=null,photoView=null;
 function openModal(title,bodyHTML,ctrlHTML){$('svTitle').textContent=title;$('svBody').innerHTML=bodyHTML;$('svCtrl').innerHTML=ctrlHTML||'';$('svCtrl').hidden=!ctrlHTML;$('svModal').hidden=false;}
 function closeSv(){$('svModal').hidden=true;$('svBody').innerHTML='';photoView=null;clearInterval(svBlink);}
@@ -1911,6 +1953,92 @@ if(NATIVE){
     if(isMobile()&&sheetState==='full'){setSheet('half');return;}
     App.exitApp();
   });
+}
+
+/* ================= rearranged workflow helpers ================= */
+const tt=(...a)=>t(...a);
+function nextLabel(){const used=new Set(S.sensors.map(x=>x.label));let l;do{l=letter(S.nextLbl++);}while(used.has(l));return l;}
+$('btnHidePipes').onclick=()=>{S.hidePipes=!S.hidePipes;save();draw();};
+try{if(localStorage.getItem('poi-pipebox')==='1')$('pipeBox').open=true;}catch(e){}
+$('pipeBox').addEventListener('toggle',()=>{try{localStorage.setItem('poi-pipebox',$('pipeBox').open?'1':'0');}catch(e){}});
+function prepNewSensor(){if(!$('newLbl').value.trim()){const used=new Set(S.sensors.map(x=>x.label));let k=S.nextLbl,l;do{l=letter(k++);}while(used.has(l));$('newLbl').placeholder=l;}}
+$('btnAddSensor').onclick=()=>{
+  const ll=parseLL($('newCoord').value);if(!ll){$('sensorErr').textContent=t('coordBad');return;}
+  let lbl=$('newLbl').value.trim();if(!lbl)lbl=nextLabel();
+  S.sensors.push({id:uid(),label:lbl,name:'',lat:ll.lat,lng:ll.lng,free:true});
+  $('newLbl').value='';$('newCoord').value='';$('sensorErr').textContent='';save();draw();prepNewSensor();
+  if(S.sensors.length>=2){$('selA').value=S.sensors[S.sensors.length-2].id;$('selB').value=S.sensors[S.sensors.length-1].id;calc();}
+  map.setView([ll.lat,ll.lng],Math.max(map.getZoom(),17));
+};
+$('newCoord').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnAddSensor').click();});
+$('btnSaveLib').onclick=()=>{libOpenDrawer(true);const cs=LIBS.find(x=>x.id===curSiteId);libShowForm(cs?'edit':'new',cs||null);};
+$('btnOpenLib').onclick=()=>libOpenDrawer(true);
+
+/* plan placement at the current view */
+function placePlanAtView(){
+  if(!IMG)return;const sz=map.getSize(),ar=IMG.h/IMG.w;let W=sz.x*0.7,H=W*ar;if(H>sz.y*0.7){H=sz.y*0.7;W=H/ar;}
+  const x0=(sz.x-W)/2,y0=(sz.y-H)/2*(isMobile()?0.6:1);
+  IMG.c=[[x0,y0],[x0+W,y0],[x0,y0+H]].map(p=>{const ll=map.containerPointToLatLng(p);return[ll.lat,ll.lng];});
+  IMG.locked=false;IMG.hidden=false;placeImg();drawHandles();saveImg();
+}
+$('btnPlaceView').onclick=placePlanAtView;
+
+/* street names from the drawing */
+const KW='JALAN|JLN|LORONG|LRG|PERSIARAN|PSRN|LEBUHRAYA|LEBUH|LINGKARAN|LENGKOK|LENGKUNGAN|TAMAN|TMN|KAMPUNG|KAMPONG|KG|BANDAR|PRESINT|PERSINT|SEKSYEN|DESA|TAMAN';
+const EXP={JLN:'JALAN',LRG:'LORONG',TMN:'TAMAN',KG:'KAMPUNG',KAMPONG:'KAMPUNG',PSRN:'PERSIARAN'};
+const STOP=/\s+(KE|DARI|ARAH|TO|FROM|SKALA|SCALE|LOT|NO\.?|NOTA|NOTE|PAIP|PIPE|MM|DIA|TARIKH|DATE)\b.*$/;
+function findStreets(lines){
+  const re=new RegExp(`\\b(${KW})\\.?\\s+[A-Z0-9][A-Z0-9'\\/\\-\\. ]{1,34}`,'g'),out=new Map();
+  lines.forEach(line=>{const u=' '+String(line).toUpperCase().replace(/\s+/g,' ')+' ';let m;
+    while((m=re.exec(u))){let n=m[0].replace(STOP,'').replace(/[\s.\-\/]+$/,'').trim();
+      const w=n.split(' ');if(EXP[w[0].replace('.','')])w[0]=EXP[w[0].replace('.','')];n=w.join(' ');
+      if(n.length>=7&&n.split(' ').length<=6&&!out.has(n))out.set(n,1);}});
+  const arr=[...out.keys()],isArea=n=>/^(TAMAN|KAMPUNG|BANDAR|DESA|PRESINT|PERSINT|SEKSYEN)\b/.test(n);
+  return arr.filter(n=>!isArea(n)).concat(arr.filter(isArea)).slice(0,12);
+}
+let STREETS=[];
+function showStreets(list,msgTxt){
+  STREETS=list;$('streetBox').hidden=false;$('streetMsg').textContent=msgTxt||(list.length?t('streetsFound',list.length):t('ocrNone'));
+  $('streetChips').innerHTML=list.map((n,i)=>`<button class="${/^(TAMAN|KAMPUNG|BANDAR|DESA)/.test(n)?'orange':'blue'}" data-street="${i}">${esc(n)}</button>`).join('');
+}
+async function geocodePlace(name){
+  const area=STREETS.find(n=>/^(TAMAN|KAMPUNG|BANDAR|DESA|SEKSYEN|PRESINT)/.test(n)&&n!==name);
+  const qs=area&&!/^(TAMAN|KAMPUNG|BANDAR|DESA)/.test(name)?[name+' '+area,name]:[name];
+  for(const q of qs){try{const r=await fetch('https://photon.komoot.io/api/?limit=1&bbox=99.6,0.8,119.3,7.4&q='+encodeURIComponent(q));const d=await r.json();
+    if(d.features&&d.features.length){const [lng,lat]=d.features[0].geometry.coordinates;return{lat,lng};}}catch(e){}}
+  return null;
+}
+async function goPlace(name){
+  if(!name)return;$('streetMsg').textContent=t('flying',name);
+  const ll=await geocodePlace(name);
+  if(!ll){$('streetMsg').textContent=t('geoNone',name);return;}
+  map.setView([ll.lat,ll.lng],18);
+  setTimeout(()=>{if(IMG&&!IMG.locked)placePlanAtView();if(isMobile())setSheet('peek');},350);
+  $('streetMsg').textContent=t('flying',name);
+}
+$('streetChips').addEventListener('click',e=>{const b=e.target.closest('[data-street]');if(b)goPlace(STREETS[+b.dataset.street]);});
+$('btnStreetGo').onclick=()=>goPlace($('streetQ').value.trim().toUpperCase());
+$('streetQ').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnStreetGo').click();});
+let ocrRun=0;
+async function detectStreetNames(src,autoGo){
+  const run=++ocrRun;let lines=[];
+  try{
+    if(src.kind==='dxf'&&src.raw){const L2=[],T2=[];walkDXF(src.raw.ents,src.raw,p=>p,null,L2,T2,0);lines=T2.map(x=>x.s);}
+    else if(src.pdfText&&src.pdfText.length)lines=src.pdfText;
+    let list=findStreets(lines);
+    if(!list.length&&src.kind!=='dxf'&&src.canvas){
+      showStreets([],t('ocrBusy'));
+      if(!window.Tesseract)await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js');
+      const c=src.canvas,k=Math.min(1,2600/Math.max(c.width,c.height)),cv=document.createElement('canvas');cv.width=Math.round(c.width*k);cv.height=Math.round(c.height*k);
+      cv.getContext('2d').drawImage(c,0,0,cv.width,cv.height);
+      const w=await Tesseract.createWorker('eng');const res=await w.recognize(cv);await w.terminate();
+      if(run!==ocrRun)return;
+      list=findStreets(res.data.text.split('\n'));
+    }
+    if(run!==ocrRun)return;
+    showStreets(list);
+    if(autoGo&&list.length)goPlace(list[0]);
+  }catch(e){console.error(e);if(run===ocrRun)showStreets([],t('ocrFail'));}
 }
 
 /* ================= project file ================= */
