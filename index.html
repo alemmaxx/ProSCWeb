@@ -133,6 +133,9 @@
   .gcard .gact button{padding:6px 11px;font-size:13px;min-height:0}
   .ghead{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:800;font-size:15px;margin-top:4px;color:var(--fg)}
   .ghead i{width:12px;height:12px;border-radius:50%;background:var(--gc);display:inline-block}
+  .mkp{position:absolute;left:0;top:0;transform:translate(-50%,calc(-100% - 8px));white-space:nowrap;padding:3px 8px;border-radius:9px;background:var(--bg);color:var(--fg);
+    font-family:var(--head);font-weight:800;font-size:12.5px;line-height:1.25;border:2px solid #fff;box-shadow:0 3px 0 rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.35)}
+  .mkp::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}
   .sitem{display:grid;grid-template-columns:118px 1fr auto;gap:6px 8px;align-items:center;padding:8px;border-radius:12px;background:var(--card2)}
   .sitem input{padding:6px 9px;font-size:13px;border-radius:9px}
   .sitem .slbl{font-family:var(--head);font-weight:800;font-size:13px!important;padding:6px 4px!important;text-align:center;background:var(--sensor);border-color:var(--sensor);color:#fff}
@@ -452,7 +455,8 @@
       </div>
       <div id="sensorErr" class="err"></div>
     </div>
-    <h3><span data-i18n="senListH"></span> <span class="mono muted" id="senCount"></span></h3>
+    <div class="row" style="justify-content:space-between"><h3><span data-i18n="senListH"></span> <span class="mono muted" id="senCount"></span></h3>
+      <label class="chk"><span data-i18n="senColor"></span><input type="color" id="senColor" value="#8b5cf6"></label></div>
     <div id="sensorList" class="slist"></div>
       </section>
 
@@ -658,7 +662,7 @@ const T={
   s1:'Pelan paip',upload:'📤 Upload pelan · JPG · PNG · PDF · DXF',pdfPage:'Halaman PDF',of:n=>'daripada '+n,
   planHint:'Seret ✥ untuk alih pelan. Tekan ✥ untuk tukar ke mod ⟳ putar, kemudian seret bulatan ⟳ untuk pusing. Seret petak kuning di bucu untuk besar/kecil. Guna ⟲ ⟳ ➖ ➕ untuk laras halus.',
   mbDone:'✔ Siap',mbUndo:'↶ Undo',mbStop:'⏹ Berhenti',mbCancel:'✖ Batal',savedDocs:n=>`Disimpan: Documents/POI-Noise-Logger/${n}`,
-  pinDel:'🗑 Buang pin',resSet:'🔗 Pembuka link pendek (pilihan)',resHint:'Link maps.app.goo.gl dibaca melalui perkhidmatan awam secara automatik. Untuk lebih stabil & peribadi, pasang Cloudflare Worker sendiri (lihat README) dan tampal URL-nya di sini.',resPh:'https://nama.workers.dev',resOk:'✅ Disimpan. Link pendek akan dibaca melalui pembuka link ini dahulu.',f1:'Pelan paip',f2:'Logger',f3:'Kumpulan',f4:'Lokasi bocor',f5:'Projek',p1:'① Pelan paip',p2:'② Logger',p3:'③ Kumpulan sensor',p4:'④ Lokasi bocor',p5:'⑤ Projek & library',next:'Seterusnya ➜',prev:'◀',
+  pinDel:'🗑 Buang pin',senColor:'🎨 Warna label',resSet:'🔗 Pembuka link pendek (pilihan)',resHint:'Link maps.app.goo.gl dibaca melalui perkhidmatan awam secara automatik. Untuk lebih stabil & peribadi, pasang Cloudflare Worker sendiri (lihat README) dan tampal URL-nya di sini.',resPh:'https://nama.workers.dev',resOk:'✅ Disimpan. Link pendek akan dibaca melalui pembuka link ini dahulu.',f1:'Pelan paip',f2:'Logger',f3:'Kumpulan',f4:'Lokasi bocor',f5:'Projek',p1:'① Pelan paip',p2:'② Logger',p3:'③ Kumpulan sensor',p4:'④ Lokasi bocor',p5:'⑤ Projek & library',next:'Seterusnya ➜',prev:'◀',
   xlsH:'📊 Import logger dari Excel',xlsHint:'Muat turun templat: 2 lajur sahaja, Nama logger & Koordinat. Koordinat boleh ditulis 4.597344, 101.078978 atau tampal link Google Maps (Kongsi → Salin pautan). Kumpulan dibuat di ③.',xlsTpl:'⬇ Templat Excel',xlsImp:'📥 Import Excel / CSV',
   xlsDone:(n,u,k,g)=>`✔ ${n} logger baru, ${u} dikemas kini${k?`, ${k} baris dilangkau`:''}${g?`, ${g} kumpulan dibuat`:''}.`,xlsBad:'Fail tidak dapat dibaca. Pastikan ada lajur Nama logger, Latitude & Longitude (atau Koordinat).',xlsLoad:'Membaca fail…',xlsLink:(n,t)=>`Membaca link Google Maps… baris ${n}/${t}`,xlsShort:n=>`${n} link pendek (maps.app.goo.gl) tidak dapat dibaca sekarang. Semak internet dan cuba import semula, pasang pembuka link sendiri di ⑤ Projek, atau tampal link penuh.`,shortWeb:'Link pendek ini tidak dapat dibaca sekarang. Cuba lagi, pasang pembuka link sendiri di ⑤ Projek, atau tampal link penuh dari bar alamat.',
   senListH:'Senarai logger',editBtn:'✏️',saveBtn:'✔ Simpan',cancelBtn:'Batal',delQ:'Padam?',grpH:'🔗 Kumpulan sensor (link)',grpHint:'Satu kumpulan = 2 sensor pada paip yang sama (cth A ↔ B). Paip lain, buat kumpulan lain (cth C ↔ D). Lokasi bocor dikira ikut kumpulan.',grpAdd:'➕ Buat kumpulan',grpSel:'Kumpulan (link)',grpName:n=>'Link '+n,grpDup:'Kumpulan dengan dua sensor ini sudah ada.',grpPick2:'Pilih dua sensor berbeza untuk kumpulan.',grpNone:'Belum ada kumpulan. Pilih 2 sensor dan tekan ➕ Buat kumpulan.',needGrp:'Buat & pilih kumpulan sensor dahulu.',grpCalc:'💧 Kira bocor',grpLeaks:n=>`${n} bocor`,grpViaPipe:'ikut paip',grpStraight:'garis lurus',tutBtn2:'🎬 Contoh video: cari lokasi bocor',tutTitle2:'🎬 Cara cari lokasi bocor',
@@ -748,7 +752,7 @@ const T={
   s1:'Pipe plan',upload:'📤 Upload plan · JPG · PNG · PDF · DXF',pdfPage:'PDF page',of:n=>'of '+n,
   planHint:'Drag ✥ to move the plan. Tap ✥ to switch to ⟳ rotate mode, then drag the ⟳ knob to turn it. Drag the yellow corner squares to resize. Use ⟲ ⟳ ➖ ➕ for fine adjustment.',
   mbDone:'✔ Done',mbUndo:'↶ Undo',mbStop:'⏹ Stop',mbCancel:'✖ Cancel',savedDocs:n=>`Saved: Documents/POI-Noise-Logger/${n}`,
-  pinDel:'🗑 Remove pin',resSet:'🔗 Short-link resolver (optional)',resHint:'maps.app.goo.gl links are read through public services automatically. For better reliability & privacy, deploy your own Cloudflare Worker (see README) and paste its URL here.',resPh:'https://name.workers.dev',resOk:'✅ Saved. Short links will be read through this resolver first.',f1:'Pipe plan',f2:'Loggers',f3:'Groups',f4:'Leak location',f5:'Project',p1:'① Pipe plan',p2:'② Loggers',p3:'③ Sensor groups',p4:'④ Leak location',p5:'⑤ Project & library',next:'Next ➜',prev:'◀',
+  pinDel:'🗑 Remove pin',senColor:'🎨 Label colour',resSet:'🔗 Short-link resolver (optional)',resHint:'maps.app.goo.gl links are read through public services automatically. For better reliability & privacy, deploy your own Cloudflare Worker (see README) and paste its URL here.',resPh:'https://name.workers.dev',resOk:'✅ Saved. Short links will be read through this resolver first.',f1:'Pipe plan',f2:'Loggers',f3:'Groups',f4:'Leak location',f5:'Project',p1:'① Pipe plan',p2:'② Loggers',p3:'③ Sensor groups',p4:'④ Leak location',p5:'⑤ Project & library',next:'Next ➜',prev:'◀',
   xlsH:'📊 Import loggers from Excel',xlsHint:'Download the template: just 2 columns, Logger name & Coordinates. Coordinates can be 4.597344, 101.078978 or a pasted Google Maps link (Share → Copy link). Groups are made in ③.',xlsTpl:'⬇ Excel template',xlsImp:'📥 Import Excel / CSV',
   xlsDone:(n,u,k,g)=>`✔ ${n} new loggers, ${u} updated${k?`, ${k} rows skipped`:''}${g?`, ${g} groups created`:''}.`,xlsBad:'The file could not be read. Make sure it has Logger name, Latitude & Longitude (or Coordinates) columns.',xlsLoad:'Reading file…',xlsLink:(n,t)=>`Reading Google Maps links… row ${n}/${t}`,xlsShort:n=>`${n} short links (maps.app.goo.gl) could not be read right now. Check the internet and import again, set up your own resolver in ⑤ Project, or paste the full link.`,shortWeb:'This short link could not be read right now. Try again, set up your own resolver in ⑤ Project, or paste the full link from the address bar.',
   senListH:'Logger list',editBtn:'✏️',saveBtn:'✔ Save',cancelBtn:'Cancel',delQ:'Delete?',grpH:'🔗 Sensor groups (links)',grpHint:'One group = 2 sensors on the same pipe (e.g. A ↔ B). Another pipe gets another group (e.g. C ↔ D). Leak locations are calculated per group.',grpAdd:'➕ Create group',grpSel:'Group (link)',grpName:n=>'Link '+n,grpDup:'A group with these two sensors already exists.',grpPick2:'Choose two different sensors for the group.',grpNone:'No groups yet. Choose 2 sensors and press ➕ Create group.',needGrp:'Create & choose a sensor group first.',grpCalc:'💧 Locate leak',grpLeaks:n=>`${n} leaks`,grpViaPipe:'along pipe',grpStraight:'straight line',tutBtn2:'🎬 Example video: locate a leak',tutTitle2:'🎬 How to locate a leak',
@@ -888,6 +892,8 @@ map.createPane('plan').style.zIndex=350;
 
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const COL={pipe:css('--pipe'),sensor:css('--sensor'),leak:css('--leak')};
+function senFg(){const n=parseInt((COL.sensor||'#8b5cf6').slice(1),16),l=(0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255;return l>0.6?'#111':'#fff';}
+function applySenColor(){const c=S.senColor||'#8b5cf6';COL.sensor=c;document.documentElement.style.setProperty('--sensor',c);const el=document.getElementById('senColor');if(el)el.value=c;}
 const KEY='poi-pipe-v3', KEYIMG='poi-pipe-img-v3', JOIN=2;
 
 let S={pipes:[],sensors:[],leaks:[],nextLbl:0,showVx:null,lastAuto:null};
@@ -1042,7 +1048,7 @@ function status(){
 const totalPts=()=>S.pipes.reduce((a,p)=>a+p.pts.length,0);
 const vxOn=()=>S.showVx==null?totalPts()<=400:S.showVx;
 function draw(){
-  ensureGroups();
+  ensureGroups();applySenColor();
   G.clearLayers();
   const showVx=vxOn();
   if(!S.hidePipes)S.pipes.forEach(p=>{
@@ -1056,7 +1062,7 @@ function draw(){
     });
   });
   S.sensors.forEach(se=>{
-    L.marker([se.lat,se.lng],{icon:L.divIcon({className:'',html:`<div class="mk" style="background:${COL.sensor}">${esc(se.label)}</div>`,iconSize:[24,24],iconAnchor:[12,12]}),draggable:true,zIndexOffset:500}).addTo(G)
+    L.marker([se.lat,se.lng],{icon:L.divIcon({className:'',html:`<div class="mkp" style="--bg:${COL.sensor};--fg:${senFg()}">${esc(se.label)}</div>`,iconSize:[0,0],iconAnchor:[0,0]}),draggable:true,zIndexOffset:500}).addTo(G)
       .bindTooltip(`${esc(se.label)}${se.name?' · '+esc(se.name):''}`,{className:'tl',direction:'top',offset:[0,-12]})
       .on('dragend',e=>{const ll=e.target.getLatLng(),s2=snap(ll),on=s2&&s2.d<=SNAPMAX;se.lat=on?s2.lat:ll.lat;se.lng=on?s2.lng:ll.lng;se.free=!on;save();draw();});
   });
@@ -1096,7 +1102,7 @@ function renderSide(){
       <label class="lab">${t('coordPh').split(':')[0]}<input class="mono" data-scoord="${i}" value="${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}" inputmode="url"></label>
       <div class="row"><button class="pri" data-sdone="1">${t('saveBtn')}</button><button class="danger" data-delsen="${i}">🗑</button></div></div>`;
     const sn=snap(s),on=sn&&sn.d<=SNAPMAX;
-    return `<div class="lrow${s.id===selSen?' sel':''}" data-ssel="${i}"><span class="lk">${esc(s.label)}</span>
+    return `<div class="lrow${s.id===selSen?' sel':''}" data-ssel="${i}"><span class="lk" style="color:${senFg()}">${esc(s.label)}</span>
       <span class="lt"><b>${esc(s.name||s.label)}</b><span>${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}${on?' · CH '+sn.s.toFixed(1):''}</span></span>
       <button data-sedit="${i}" title="Edit">✏️</button>${delSen===s.id?`<button class="danger" data-delsen="${i}">${t('delQ')}</button>`:`<button class="x" data-sdel="${i}" title="${t('delSensor')}">✕</button>`}</div>`;}).join('')||`<span class="hint">${t('noSensors')}</span>`;
   const opts=S.sensors.map(s=>`<option value="${s.id}">${esc(s.label)}${s.name?' · '+esc(s.name):''}</option>`).join('');
@@ -2384,6 +2390,8 @@ async function getCoord(v){
   return{};
 }
 
+$('senColor').addEventListener('input',e=>{S.senColor=e.target.value;applySenColor();draw();});
+$('senColor').addEventListener('change',()=>save());
 /* ================= loggers from Excel / CSV ================= */
 async function loadXLSX(){if(!window.XLSX)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');return window.XLSX;}
 $('btnXlsTpl').onclick=async()=>{
