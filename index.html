@@ -444,7 +444,7 @@
       <h3 data-i18n="addSensorH"></h3>
       <div class="row">
         <input id="newLbl" style="flex:0 0 84px" data-i18n-ph="labelPh">
-        <input id="newCoord" data-i18n-ph="coordPh" inputmode="decimal">
+        <input id="newCoord" data-i18n-ph="coordPh" inputmode="url" autocomplete="off">
       </div>
       <div class="row">
         <button class="purple" id="btnAddSensor" data-i18n="addSensor"></button>
@@ -651,8 +651,8 @@ const T={
   planHint:'Seret ✥ untuk alih pelan. Tekan ✥ untuk tukar ke mod ⟳ putar, kemudian seret bulatan ⟳ untuk pusing. Seret petak kuning di bucu untuk besar/kecil. Guna ⟲ ⟳ ➖ ➕ untuk laras halus.',
   mbDone:'✔ Siap',mbUndo:'↶ Undo',mbStop:'⏹ Berhenti',mbCancel:'✖ Batal',savedDocs:n=>`Disimpan: Documents/POI-Noise-Logger/${n}`,
   pinDel:'🗑 Buang pin',f1:'Pelan paip',f2:'Logger',f3:'Kumpulan',f4:'Lokasi bocor',f5:'Projek',p1:'① Pelan paip',p2:'② Logger',p3:'③ Kumpulan sensor',p4:'④ Lokasi bocor',p5:'⑤ Projek & library',next:'Seterusnya ➜',prev:'◀',
-  xlsH:'📊 Import logger dari Excel',xlsHint:'Muat turun templat, isi nama logger & koordinat (satu baris satu logger), kemudian import. Lajur Kumpulan (pilihan): 2 logger dengan nama kumpulan sama terus jadi satu link.',xlsTpl:'⬇ Templat Excel',xlsImp:'📥 Import Excel / CSV',
-  xlsDone:(n,u,k,g)=>`✔ ${n} logger baru, ${u} dikemas kini${k?`, ${k} baris dilangkau`:''}${g?`, ${g} kumpulan dibuat`:''}.`,xlsBad:'Fail tidak dapat dibaca. Pastikan ada lajur Nama logger, Latitude & Longitude (atau Koordinat).',xlsLoad:'Membaca fail…',
+  xlsH:'📊 Import logger dari Excel',xlsHint:'Muat turun templat: 2 lajur sahaja, Nama logger & Koordinat. Koordinat boleh ditulis 4.597344, 101.078978 atau tampal link Google Maps (Kongsi → Salin pautan). Kumpulan dibuat di ③.',xlsTpl:'⬇ Templat Excel',xlsImp:'📥 Import Excel / CSV',
+  xlsDone:(n,u,k,g)=>`✔ ${n} logger baru, ${u} dikemas kini${k?`, ${k} baris dilangkau`:''}${g?`, ${g} kumpulan dibuat`:''}.`,xlsBad:'Fail tidak dapat dibaca. Pastikan ada lajur Nama logger, Latitude & Longitude (atau Koordinat).',xlsLoad:'Membaca fail…',xlsLink:(n,t)=>`Membaca link Google Maps… baris ${n}/${t}`,xlsShort:n=>`${n} link pendek (maps.app.goo.gl) tidak dapat dibaca di pelayar web: buka link itu, salin link penuh dari bar alamat, atau guna APK / .exe.`,shortWeb:'Link pendek maps.app.goo.gl tidak dapat dibaca di pelayar web. Buka link itu dan salin link penuh dari bar alamat, atau guna APK / .exe.',
   senListH:'Senarai logger',editBtn:'✏️',saveBtn:'✔ Simpan',cancelBtn:'Batal',delQ:'Padam?',grpH:'🔗 Kumpulan sensor (link)',grpHint:'Satu kumpulan = 2 sensor pada paip yang sama (cth A ↔ B). Paip lain, buat kumpulan lain (cth C ↔ D). Lokasi bocor dikira ikut kumpulan.',grpAdd:'➕ Buat kumpulan',grpSel:'Kumpulan (link)',grpName:n=>'Link '+n,grpDup:'Kumpulan dengan dua sensor ini sudah ada.',grpPick2:'Pilih dua sensor berbeza untuk kumpulan.',grpNone:'Belum ada kumpulan. Pilih 2 sensor dan tekan ➕ Buat kumpulan.',needGrp:'Buat & pilih kumpulan sensor dahulu.',grpCalc:'💧 Kira bocor',grpLeaks:n=>`${n} bocor`,grpViaPipe:'ikut paip',grpStraight:'garis lurus',tutBtn2:'🎬 Contoh video: cari lokasi bocor',tutTitle2:'🎬 Cara cari lokasi bocor',
   tutCaps2:['Dua noise logger dipasang. Mari cari lokasi bocor di antaranya.','Taip koordinat logger pertama, tekan ➕ Tambah.','Tambah logger kedua dengan cara yang sama.','Tanpa laluan paip, jarak dikira ikut garis lurus: SALAH.','Tekan 🧭 Ikut laluan paip dalam pelan.','Klik sekali pada garisan paip kuning dalam pelan.','Laluan dijejak ikut paip kuning: jarak sebenar 85.0 m.','Pilih sensor rujukan, taip jarak dari correlator, tekan 💧 Tandakan bocor.','Titik bocor berkelip tepat atas paip, dengan koordinat.','Tekan 💬 WhatsApp untuk hantar lokasi kepada team.'],
   tutUi2:{coord:'Koordinat logger',add:'➕ Tambah',route:'🧭 Ikut laluan paip',straight:'Garis lurus: 60.6 m ✗',via:'Ikut paip: 85.0 m ✓',straightS:'garis lurus',viaS:'ikut paip 85.0 m',pick:'Klik garisan paip kuning dalam pelan',from:'Diukur dari',dist:'Jarak (m)',mark:'💧 Tandakan bocor',leak:'SASARAN BOCOR',fromS:'dari',done:'✔ Lokasi bocor dihantar kepada team'},routeBtn:'🧭 Ikut laluan paip dalam pelan',routeTol:'Toleransi warna',routeHint:(a,b)=>`Klik pada garisan paip (cth kuning) dalam pelan, di antara ${a} dan ${b}.`,routeBusy:'Menjejak garisan paip…',routeOk:(a,b,d)=>`✔ Laluan ${a} → ${b} ikut garisan pelan: ${d}. Lokasi bocor dikira semula.`,routeFail:'Garisan terputus atau sensor jauh dari garisan itu. Klik bahagian garisan yang lebih jelas, naikkan toleransi warna, atau lukis bahagian terputus dengan ✏️ Lukis paip manual.',routeNoPlan:'Upload pelan dahulu.',routeNeed:'Pilih dua sensor berbeza dahulu.',routeName:(a,b)=>`Laluan ${a}–${b}`,tutBtn:'🎬 Contoh video: laras skala pelan',tutTitle:'🎬 Cara laras drawing ikut skala peta',
@@ -669,7 +669,7 @@ const T={
   undoAuto:'↶ Buang hasil kesan terakhir',
   manualPipes:'✏️ Lukis paip manual',hidePipes:'🙈 Sorok paip',showPipes:'👁 Tunjuk paip',placeAtView:'🎯 Letak pelan di skrin',
   streetsH:'🛣 Nama jalan dalam drawing',streetSearchPh:'Jalan, taman, bangunan, tempat…',goPlace:'📍 Pergi & letak pelan',streetsFound:n=>`${n} nama dikesan. Tekan untuk pergi ke lokasi & letak pelan di situ.`,ocrBusy:'Membaca teks dalam drawing (OCR)…',ocrNone:'Tiada nama jalan dikesan. Taip nama jalan untuk pergi ke lokasi.',ocrFail:'Tidak dapat membaca teks drawing. Taip nama jalan untuk pergi ke lokasi.',flying:n=>`📍 Pin diletak di ${n}. Seret ✥ pelan ke pin, tekan ✥ untuk putar, seret bucu untuk saiz.`,geoNone:n=>`“${n}” tidak dijumpai. Cuba nama lain atau tambah nama taman/bandar.`,
-  addSensorH:'➕ Tambah sensor ikut koordinat',labelPh:'Nama',coordPh:'Koordinat: 3.073300, 101.519140',addSensor:'➕ Tambah',coordBad:'Format koordinat: lat, lng (cth 3.073300, 101.519140)',straight:' (garis lurus)',leakCalcH:'💧 Kira lokasi bocor',
+  addSensorH:'➕ Tambah sensor ikut koordinat',labelPh:'Nama',coordPh:'Koordinat atau link Google Maps',addSensor:'➕ Tambah',coordBad:'Koordinat tidak dikenali. Guna lat, lng (cth 4.597344, 101.078978) atau link Google Maps.',straight:' (garis lurus)',leakCalcH:'💧 Kira lokasi bocor',
   saveLib:'📚 Simpan ke library',openLib:'📂 Buka library',goSensor:'Pergi',
   s2:'Sensor & lokasi bocor',s2Hint:'Lukis sendiri: tekan "Lukis paip", klik setiap selekoh, kemudian "Siap" atau double-click. Paip yang hujungnya berdekatan (≤ 2 m) dikira bersambung.',
   drawPipe:'✏️ Lukis paip',done:'✔ Siap',undoPt:'↶ Undo titik',vxShow:'👁 Titik edit',vxHide:'🙈 Sorok titik',roads:'🛣 Kenal pasti jalan',
@@ -741,8 +741,8 @@ const T={
   planHint:'Drag ✥ to move the plan. Tap ✥ to switch to ⟳ rotate mode, then drag the ⟳ knob to turn it. Drag the yellow corner squares to resize. Use ⟲ ⟳ ➖ ➕ for fine adjustment.',
   mbDone:'✔ Done',mbUndo:'↶ Undo',mbStop:'⏹ Stop',mbCancel:'✖ Cancel',savedDocs:n=>`Saved: Documents/POI-Noise-Logger/${n}`,
   pinDel:'🗑 Remove pin',f1:'Pipe plan',f2:'Loggers',f3:'Groups',f4:'Leak location',f5:'Project',p1:'① Pipe plan',p2:'② Loggers',p3:'③ Sensor groups',p4:'④ Leak location',p5:'⑤ Project & library',next:'Next ➜',prev:'◀',
-  xlsH:'📊 Import loggers from Excel',xlsHint:'Download the template, fill in logger names & coordinates (one row per logger), then import. Group column (optional): 2 loggers with the same group name become one link.',xlsTpl:'⬇ Excel template',xlsImp:'📥 Import Excel / CSV',
-  xlsDone:(n,u,k,g)=>`✔ ${n} new loggers, ${u} updated${k?`, ${k} rows skipped`:''}${g?`, ${g} groups created`:''}.`,xlsBad:'The file could not be read. Make sure it has Logger name, Latitude & Longitude (or Coordinates) columns.',xlsLoad:'Reading file…',
+  xlsH:'📊 Import loggers from Excel',xlsHint:'Download the template: just 2 columns, Logger name & Coordinates. Coordinates can be 4.597344, 101.078978 or a pasted Google Maps link (Share → Copy link). Groups are made in ③.',xlsTpl:'⬇ Excel template',xlsImp:'📥 Import Excel / CSV',
+  xlsDone:(n,u,k,g)=>`✔ ${n} new loggers, ${u} updated${k?`, ${k} rows skipped`:''}${g?`, ${g} groups created`:''}.`,xlsBad:'The file could not be read. Make sure it has Logger name, Latitude & Longitude (or Coordinates) columns.',xlsLoad:'Reading file…',xlsLink:(n,t)=>`Reading Google Maps links… row ${n}/${t}`,xlsShort:n=>`${n} short links (maps.app.goo.gl) cannot be read in a web browser: open the link, copy the full link from the address bar, or use the APK / .exe.`,shortWeb:'Short maps.app.goo.gl links cannot be read in a web browser. Open the link and copy the full link from the address bar, or use the APK / .exe.',
   senListH:'Logger list',editBtn:'✏️',saveBtn:'✔ Save',cancelBtn:'Cancel',delQ:'Delete?',grpH:'🔗 Sensor groups (links)',grpHint:'One group = 2 sensors on the same pipe (e.g. A ↔ B). Another pipe gets another group (e.g. C ↔ D). Leak locations are calculated per group.',grpAdd:'➕ Create group',grpSel:'Group (link)',grpName:n=>'Link '+n,grpDup:'A group with these two sensors already exists.',grpPick2:'Choose two different sensors for the group.',grpNone:'No groups yet. Choose 2 sensors and press ➕ Create group.',needGrp:'Create & choose a sensor group first.',grpCalc:'💧 Locate leak',grpLeaks:n=>`${n} leaks`,grpViaPipe:'along pipe',grpStraight:'straight line',tutBtn2:'🎬 Example video: locate a leak',tutTitle2:'🎬 How to locate a leak',
   tutCaps2:['Two noise loggers are installed. Let us find the leak between them.','Type the first logger coordinates, press ➕ Add.','Add the second logger the same way.','Without a pipe route the distance is a straight line: WRONG.','Press 🧭 Follow the pipe line in the plan.','Click once on the yellow pipe line in the plan.','The route follows the yellow pipe: true distance 85.0 m.','Choose the reference sensor, type the correlator distance, press 💧 Mark leak.','The leak point blinks right on the pipe, with coordinates.','Press 💬 WhatsApp to send the location to the team.'],
   tutUi2:{coord:'Logger coordinates',add:'➕ Add',route:'🧭 Follow pipe line',straight:'Straight line: 60.6 m ✗',via:'Along pipe: 85.0 m ✓',straightS:'straight line',viaS:'along pipe 85.0 m',pick:'Click the yellow pipe line in the plan',from:'Measured from',dist:'Distance (m)',mark:'💧 Mark leak',leak:'LEAK TARGET',fromS:'from',done:'✔ Leak location sent to the team'},routeBtn:'🧭 Follow the pipe line in the plan',routeTol:'Colour tolerance',routeHint:(a,b)=>`Click on the pipe line (e.g. yellow) in the plan, between ${a} and ${b}.`,routeBusy:'Tracing the pipe line…',routeOk:(a,b,d)=>`✔ Route ${a} → ${b} follows the plan line: ${d}. Leak location recalculated.`,routeFail:'The line is broken or a sensor is far from it. Click a clearer part of the line, raise the colour tolerance, or draw the broken part with ✏️ Draw pipes manually.',routeNoPlan:'Upload a plan first.',routeNeed:'Choose two different sensors first.',routeName:(a,b)=>`Route ${a}–${b}`,tutBtn:'🎬 Example video: fix plan scale',tutTitle:'🎬 How to fit a drawing to the map scale',
@@ -759,7 +759,7 @@ const T={
   undoAuto:'↶ Remove last detection',
   manualPipes:'✏️ Draw pipes manually',hidePipes:'🙈 Hide pipes',showPipes:'👁 Show pipes',placeAtView:'🎯 Place plan on screen',
   streetsH:'🛣 Street names in the drawing',streetSearchPh:'Street, taman, building, place…',goPlace:'📍 Go & place plan',streetsFound:n=>`${n} names detected. Tap one to go there & place the plan.`,ocrBusy:'Reading text in the drawing (OCR)…',ocrNone:'No street names detected. Type a street name to go there.',ocrFail:'Could not read the drawing text. Type a street name to go there.',flying:n=>`📍 Pin placed at ${n}. Drag the plan ✥ to the pin, tap ✥ to rotate, drag a corner to resize.`,geoNone:n=>`“${n}” not found. Try another name or add the taman/town.`,
-  addSensorH:'➕ Add sensor by coordinates',labelPh:'Name',coordPh:'Coordinates: 3.073300, 101.519140',addSensor:'➕ Add',coordBad:'Coordinate format: lat, lng (e.g. 3.073300, 101.519140)',straight:' (straight line)',leakCalcH:'💧 Locate leak',
+  addSensorH:'➕ Add sensor by coordinates',labelPh:'Name',coordPh:'Coordinates or Google Maps link',addSensor:'➕ Add',coordBad:'Coordinates not recognised. Use lat, lng (e.g. 4.597344, 101.078978) or a Google Maps link.',straight:' (straight line)',leakCalcH:'💧 Locate leak',
   saveLib:'📚 Save to library',openLib:'📂 Open library',goSensor:'Go',
   s2:'Sensors & leak location',s2Hint:'Draw manually: press "Draw pipe", click at every bend, then "Done" or double-click. Pipes whose ends are close (≤ 2 m) count as connected.',
   drawPipe:'✏️ Draw pipe',done:'✔ Done',undoPt:'↶ Undo point',vxShow:'👁 Edit points',vxHide:'🙈 Hide points',roads:'🛣 Identify roads',
@@ -1085,7 +1085,7 @@ function renderSide(){
   $('sensorList').innerHTML=S.sensors.map((s,i)=>{
     if(s.id===editSen)return `<div class="ledit">
       <div class="grid2"><label class="lab">${t('labelPh')}<input data-slbl="${i}" value="${esc(s.label)}"></label><label class="lab">${t('sensorNamePh')}<input data-sen="${i}" value="${esc(s.name||'')}"></label></div>
-      <label class="lab">${t('coordPh').split(':')[0]}<input class="mono" data-scoord="${i}" value="${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}" inputmode="decimal"></label>
+      <label class="lab">${t('coordPh').split(':')[0]}<input class="mono" data-scoord="${i}" value="${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}" inputmode="url"></label>
       <div class="row"><button class="pri" data-sdone="1">${t('saveBtn')}</button><button class="danger" data-delsen="${i}">🗑</button></div></div>`;
     const sn=snap(s),on=sn&&sn.d<=SNAPMAX;
     return `<div class="lrow${s.id===selSen?' sel':''}" data-ssel="${i}"><span class="lk">${esc(s.label)}</span>
@@ -1134,7 +1134,7 @@ aside.addEventListener('input',e=>{
 aside.addEventListener('change',e=>{
   const t=e.target,d=t.dataset;
   if(d.pcol!==undefined){S.pipes[+d.pcol].color=t.value;save();draw();}
-  else if(d.scoord!==undefined){const ll=parseLL(t.value),se=S.sensors[+d.scoord];if(ll){se.lat=ll.lat;se.lng=ll.lng;se.free=true;$('sensorErr').textContent='';save();draw();}else{$('sensorErr').textContent=tt('coordBad');}}
+  else if(d.scoord!==undefined){const ll=parseCoordAny(t.value),se=S.sensors[+d.scoord];if(!ll&&SHORTMAP.test(t.value.trim())){getCoord(t.value).then(r=>{if(r.ll){se.lat=r.ll.lat;se.lng=r.ll.lng;se.free=true;save();draw();}else $('sensorErr').textContent=tt('shortWeb');});return;}if(ll){se.lat=ll.lat;se.lng=ll.lng;se.free=true;$('sensorErr').textContent='';save();draw();}else{$('sensorErr').textContent=tt('coordBad');}}
   else if(d.sen!==undefined||d.pipe!==undefined||d.slbl!==undefined||d.gname!==undefined)draw();
 });
 aside.addEventListener('click',e=>{
@@ -2325,13 +2325,43 @@ if(NATIVE){
 
 $('gKey').value=gKey();$('gKeyMsg').textContent=gKey()?'':t('gNone');
 $('gKeySave').onclick=()=>{const k=$('gKey').value.trim();try{localStorage.setItem('poi-gkey',k);}catch(e){}$('gKeyMsg').textContent=k?'…':t('gNone');setupGoogle();};
+/* ================= coordinates from text or Google Maps links ================= */
+const SHORTMAP=/^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)\//i;
+function coordOk(a,b){return isFinite(a)&&isFinite(b)&&Math.abs(a)<=90&&Math.abs(b)<=180?{lat:+a,lng:+b}:null;}
+function parseCoordAny(v){
+  let s=String(v??'').trim();if(!s)return null;try{s=decodeURIComponent(s);}catch(e){}
+  let m=s.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);if(m)return coordOk(+m[1],+m[2]);
+  m=s.match(/[?&](?:q|query|ll|destination|center|daddr)=(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);if(m)return coordOk(+m[1],+m[2]);
+  m=s.match(/(\d+)°\s*(\d+)['′]\s*([\d.]+)["″]?\s*([NS])[\s,+]*(\d+)°\s*(\d+)['′]\s*([\d.]+)["″]?\s*([EW])/i);
+  if(m){const la=(+m[1]+m[2]/60+m[3]/3600)*(/s/i.test(m[4])?-1:1),lo=(+m[5]+m[6]/60+m[7]/3600)*(/w/i.test(m[8])?-1:1);return coordOk(la,lo);}
+  m=s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);if(m)return coordOk(+m[1],+m[2]);
+  if(/https?:/i.test(s))return null;
+  return parseLL(s);
+}
+async function resolveShort(u){
+  try{
+    if(window.poiNative&&window.poiNative.resolveUrl){const r=await window.poiNative.resolveUrl(u);if(r)return r;}
+    const C=window.Capacitor;
+    if(C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins&&C.Plugins.CapacitorHttp){
+      const r=await C.Plugins.CapacitorHttp.request({url:u,method:'GET'});
+      if(r){if(r.url&&r.url!==u)return r.url;const h=r.headers||{},loc=h.Location||h.location;if(loc)return loc;
+        if(typeof r.data==='string'){const m=r.data.match(/https:\/\/www\.google\.[a-z.]+\/maps\/[^"'\s<>]+/);if(m)return m[0].replace(/\\u0026/g,'&').replace(/&amp;/g,'&');}}}
+  }catch(e){console.warn(e);}
+  return null;
+}
+async function getCoord(v){
+  const s=String(v??'').trim();const direct=parseCoordAny(s);if(direct)return{ll:direct};
+  if(SHORTMAP.test(s)){const long=await resolveShort(s);if(long){const ll=parseCoordAny(long);if(ll)return{ll};}return{short:true};}
+  return{};
+}
+
 /* ================= loggers from Excel / CSV ================= */
 async function loadXLSX(){if(!window.XLSX)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');return window.XLSX;}
 $('btnXlsTpl').onclick=async()=>{
   try{const X=await loadXLSX();
-    const rows=LANG==='en'?[['Logger name','Description','Latitude','Longitude','Group']]:[['Nama logger','Keterangan','Latitude','Longitude','Kumpulan']];
-    rows.push(['MY07-0001','Injap Jalan Tun Sambanthan',4.597512,101.078230,'Link 1'],['MY07-0003','Injap Hala Timah',4.598420,101.077610,'Link 1'],['MY07-0005','Hidran Jalan Bandar Timah',4.596880,101.079540,'Link 2'],['MY07-0006','Injap Jalan Panglima',4.596110,101.080310,'Link 2']);
-    const ws=X.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:14},{wch:30},{wch:12},{wch:12},{wch:10}];
+    const rows=LANG==='en'?[['Logger name','Coordinates / Google Maps link']]:[['Nama logger','Koordinat / link Google Maps']];
+    rows.push(['MY07-0001','4.597512, 101.078230'],['MY07-0003','https://www.google.com/maps?q=4.598420,101.077610'],['MY07-0005','https://maps.app.goo.gl/xoXsKMk5RnwHvnpC8'],['MY07-0006','4°35\'46.0"N 101°04\'49.1"E']);
+    const ws=X.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:16},{wch:60}];
     const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Logger');
     const out=X.write(wb,{bookType:'xlsx',type:'array'});
     saveBlob(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),LANG==='en'?'logger-template.xlsx':'templat-logger.xlsx');
@@ -2343,26 +2373,24 @@ $('xlsIn').onchange=async e=>{
   try{
     const X=await loadXLSX(),wb=X.read(await f.arrayBuffer(),{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]];
     const rows=X.utils.sheet_to_json(ws,{header:1,defval:'',raw:true}).filter(r=>r.some(c=>String(c).trim()!==''));
-    const hi=rows.findIndex(r=>r.some(c=>/^\s*lat(itude)?\b/i.test(String(c)))||r.some(c=>/^\s*(koordinat|coord)/i.test(String(c))));if(hi<0)throw 0;
+    const hi=rows.findIndex(r=>r.some(c=>/^\s*lat(itude)?\b/i.test(String(c)))||r.some(c=>/^\s*(koordinat|coord|link|google)/i.test(String(c))));if(hi<0)throw 0;
     const H=rows[hi].map(c=>String(c).trim().toLowerCase()),col=re=>H.findIndex(h=>re.test(h));
-    const cL=col(/^(nama|name|label|logger|id|no)/),cN=col(/keterangan|lokasi|location|desc|remark|nota|note/),cLa=col(/^lat/),cLo=col(/^(lng|lon|long)/),cC=col(/koordinat|coord/),cG=col(/kumpulan|group|link/);
+    const cL=col(/^(nama|name|label|logger|id|no\b)/),cN=col(/keterangan|lokasi|location|desc|remark|nota|note/),cLa=col(/^lat/),cLo=col(/^(lng|lon|long)/),cC=col(/koordinat|coord|link|google|map|lokasi|location/),cG=col(/kumpulan|group|link/);
     if(cL<0||((cLa<0||cLo<0)&&cC<0))throw 0;
-    let added=0,upd=0,skip=0;const byGroup={};
-    rows.slice(hi+1).forEach(r=>{
+    let added=0,upd=0,skip=0,shortFail=0;const body=rows.slice(hi+1);
+    for(let n=0;n<body.length;n++){const r=body[n];
       const lbl=String(r[cL]).trim();let lat,lng;
       if(cLa>=0&&cLo>=0){lat=parseFloat(String(r[cLa]).replace(',','.'));lng=parseFloat(String(r[cLo]).replace(',','.'));}
-      if((isNaN(lat)||isNaN(lng))&&cC>=0){const ll=parseLL(r[cC]);if(ll){lat=ll.lat;lng=ll.lng;}}
-      if(!lbl||isNaN(lat)||isNaN(lng)||Math.abs(lat)>90||Math.abs(lng)>180){skip++;return;}
-      const name=cN>=0?String(r[cN]).trim():'';let se=S.sensors.find(x=>x.label===lbl);
+      if((isNaN(lat)||isNaN(lng))&&cC>=0){const v=String(r[cC]).trim();if(SHORTMAP.test(v))$('xlsMsg').textContent=t('xlsLink',n+1,body.length);
+        const res=await getCoord(v);if(res.ll){lat=res.ll.lat;lng=res.ll.lng;}else if(res.short)shortFail++;}
+      if(!lbl||isNaN(lat)||isNaN(lng)||Math.abs(lat)>90||Math.abs(lng)>180){skip++;continue;}
+      const name=cN>=0&&cN!==cC?String(r[cN]).trim():'';let se=S.sensors.find(x=>x.label===lbl);
       if(se){se.lat=lat;se.lng=lng;if(name)se.name=name;se.free=true;upd++;}
       else{se={id:uid(),label:lbl,name,lat,lng,free:true};S.sensors.push(se);added++;}
-      const gn=cG>=0?String(r[cG]).trim():'';if(gn)(byGroup[gn]=byGroup[gn]||[]).push(se.id);
-    });
-    let gmade=0;S.groups=S.groups||[];
-    Object.entries(byGroup).forEach(([gn,ids])=>{if(ids.length<2)return;const [a,b]=ids;
-      if(S.groups.some(g=>(g.a===a&&g.b===b)||(g.a===b&&g.b===a)))return;const g=newGroup(a,b);g.name=gn;gmade++;});
+    }
+    const gmade=0;
     save();draw();
-    $('xlsMsg').textContent=t('xlsDone',added,upd,skip,gmade);
+    $('xlsMsg').textContent=t('xlsDone',added,upd,skip,gmade)+(shortFail?' '+t('xlsShort',shortFail):'');
     const bb=L.latLngBounds([]);S.sensors.forEach(x=>bb.extend([x.lat,x.lng]));if(bb.isValid())map.fitBounds(bb,{padding:[60,60],maxZoom:18});
   }catch(err){console.error(err);$('xlsMsg').textContent=t('xlsBad');}
 };
@@ -2678,8 +2706,9 @@ $('btnHidePipes').onclick=()=>{S.hidePipes=!S.hidePipes;save();draw();};
 try{if(localStorage.getItem('poi-pipebox')==='1')$('pipeBox').open=true;}catch(e){}
 $('pipeBox').addEventListener('toggle',()=>{try{localStorage.setItem('poi-pipebox',$('pipeBox').open?'1':'0');}catch(e){}});
 function prepNewSensor(){if(!$('newLbl').value.trim()){const used=new Set(S.sensors.map(x=>x.label));let k=S.nextLbl,l;do{l=letter(k++);}while(used.has(l));$('newLbl').placeholder=l;}}
-$('btnAddSensor').onclick=()=>{
-  const ll=parseLL($('newCoord').value);if(!ll){$('sensorErr').textContent=t('coordBad');return;}
+$('btnAddSensor').onclick=async()=>{
+  $('sensorErr').textContent='';const res=await getCoord($('newCoord').value),ll=res.ll;
+  if(!ll){$('sensorErr').textContent=res.short?t('shortWeb'):t('coordBad');return;}
   let lbl=$('newLbl').value.trim();if(!lbl)lbl=nextLabel();
   S.sensors.push({id:uid(),label:lbl,name:'',lat:ll.lat,lng:ll.lng,free:true});
   $('newLbl').value='';$('newCoord').value='';$('sensorErr').textContent='';save();draw();prepNewSensor();
