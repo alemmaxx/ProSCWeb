@@ -29,3 +29,14 @@ Upload semula `index.html` yang baru ke repo yang sama (Add file → Upload file
 - Data (paip, sensor, bocor) disimpan dalam browser setiap pengguna. Guna **💾 Simpan projek** untuk dapatkan fail projek `.html` yang boleh dibuka terus atau dihantar kepada orang lain.
 - Repo **Public** bermaksud sesiapa boleh lihat kod alat ini, tetapi data projek anda tidak disimpan di GitHub.
 - Perlukan internet untuk peta satelit (Esri), pembaca PDF dan carian lokasi.
+
+## Pembuka link pendek Google Maps (pilihan, percuma)
+
+Link `maps.app.goo.gl` dalam Excel dibaca secara automatik melalui perkhidmatan awam. Jika ada link yang gagal, atau anda mahu lebih stabil dan peribadi, pasang pembuka link sendiri (±5 minit):
+
+1. Daftar percuma di https://dash.cloudflare.com → **Workers & Pages** → **Create** → **Create Worker** → beri nama (cth `pembuka-link`) → **Deploy**.
+2. Tekan **Edit code**, padam kod contoh, tampal isi fail `pembuka-link-worker.js` → **Deploy**.
+3. Salin URL Worker (cth `https://pembuka-link.namaanda.workers.dev`).
+4. Dalam alat: **⑤ Projek → 🔗 Pembuka link pendek** → tampal URL → **💾 Simpan key**.
+
+Fail `pembuka-link-worker.js` tidak perlu di-upload ke GitHub Pages; ia hanya untuk Cloudflare.
