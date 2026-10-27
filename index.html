@@ -93,7 +93,8 @@
   .tile.tleak.has b{animation:cntPulse 1.6s ease-in-out infinite}
   @keyframes cntPulse{50%{text-shadow:0 0 14px #fff}}
   #map{position:relative}
-  .locbtn{position:absolute;left:10px;top:84px;z-index:1000;width:40px;height:40px;padding:0!important;border-radius:12px!important;font-size:18px}
+  #svModal{z-index:5200}
+  .locbtn{position:absolute;left:auto;top:auto;right:10px;bottom:96px;z-index:1000;width:40px;height:40px;padding:0!important;border-radius:12px!important;font-size:18px}
   .plist{display:grid;gap:8px;max-height:62vh;overflow:auto;padding:2px}
   .prow{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;text-align:left;padding:10px 12px!important;border-radius:14px!important;white-space:normal;--t:#1d2a35;--b:#16212a;--s:#070b0e}
   .prow .pk{grid-row:1/3;min-width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-family:var(--head);font-size:17px;font-weight:800;color:#fff;padding:0 8px}
@@ -103,7 +104,7 @@
   .prow .pgo{grid-row:1/3;grid-column:3;font-size:13px;color:#93c5fd}
   .pempty{color:var(--muted);padding:12px}
   @media (prefers-reduced-motion:reduce){.tile.tleak.has b{animation:none}}
-  @media (max-width:760px){.locbtn{top:calc(84px + env(safe-area-inset-top,0px))}.tile b{font-size:34px}}
+  @media (max-width:760px){.locbtn{bottom:calc(96px + env(safe-area-inset-bottom,0px))}}
   header h1{font-size:19px;white-space:nowrap}
   .streetrow{display:grid;gap:8px}
   .streetrow input{width:100%;padding:12px 14px;font-size:15px}
@@ -122,7 +123,7 @@
   .tutcap{display:flex;gap:8px;align-items:flex-start;padding:8px 12px 10px;font-size:13.5px;font-weight:600;line-height:1.4;min-height:48px}
   .tutcap .mono{color:#a78bfa;font-weight:700;flex:none}
   .tutbar{height:4px;background:#1f2b35}.tutbar i{display:block;height:100%;width:0;background:#8b5cf6}
-  @media (max-width:760px){.tutbox{bottom:calc(var(--sheet,46vh) + 10px)}}
+  @media (max-width:760px){.tutbox{bottom:calc(14px + env(safe-area-inset-bottom,0px))}}
   .gcard{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;padding:10px;border-radius:14px;background:var(--card);border:2px solid var(--gc)}
   .gcard .gdot{width:14px;height:14px;border-radius:50%;background:var(--gc)}
   .gcard input{padding:6px 9px;font-size:14px;font-weight:700;border-radius:9px}
@@ -253,65 +254,96 @@
   details.set summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:13px}
   details.set[open] summary{margin-bottom:8px}
   .sheetbar{display:none}
-  .modebar{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top,0px));z-index:1250;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;
+  .modebar{position:fixed;left:50%;transform:translateX(-50%);top:calc(70px + env(safe-area-inset-top,0px));z-index:1250;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;
     max-width:calc(100vw - 24px);padding:8px 10px;border-radius:18px;background:rgba(16,23,29,.95);border:1px solid var(--line);box-shadow:0 4px 0 #070b0e,0 10px 26px rgba(0,0,0,.5)}
   .modebar span{font-weight:700;font-size:13.5px;color:#fcd34d;padding:0 4px;max-width:46ch}
   .modebar button{padding:8px 12px;font-size:14px}
-  @media (min-width:761px){.modebar{left:calc(50% + 200px)}}
+  /* ---- full-screen map with arrow-flow toolbar and pop-up panels ---- */
+  .app{display:block;height:100%}
+  #map{position:fixed!important;inset:0;height:auto;min-height:0;z-index:1}
+  aside{position:static;background:none;border:none;overflow:visible;min-width:0}
+  .topbar{position:fixed;z-index:1200;top:calc(10px + env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));max-width:calc(100vw - 110px);
+    display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:16px;background:rgba(16,23,29,.93);border:1px solid var(--line);box-shadow:0 4px 0 #070b0e,0 10px 26px rgba(0,0,0,.45);backdrop-filter:blur(6px)}
+  .tbrand{display:flex;align-items:center;gap:6px;padding-right:4px;flex:none}
+  .tbrand b{font-family:var(--head);font-size:16px}
+  .logo.sm{width:30px;height:30px;border-radius:9px;font-size:16px;box-shadow:0 3px 0 #0b5d3a}
+  .flow{display:flex;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+  .flow::-webkit-scrollbar{display:none}
+  .fstep{--t:#2a3946;--b:#1f2b35;--s:transparent;flex:none;display:flex;align-items:center;gap:7px;padding:8px 22px 8px 20px!important;margin-left:-8px;border-radius:0!important;box-shadow:none!important;
+    clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%,13px 50%);font-size:14px!important;min-height:0!important}
+  .fstep:first-child{margin-left:0;padding-left:12px!important;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,0 100%);border-radius:10px 0 0 10px!important}
+  .fstep:active{transform:none}
+  .fstep i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff;font-size:12.5px;font-weight:800;flex:none}
+  .fstep em{font-style:normal;font-family:var(--mono);font-size:11px;padding:1px 6px;border-radius:8px;background:rgba(255,255,255,.14)}
+  .fstep em:empty{display:none}
+  .fstep.on{background:var(--c);--t:var(--c);--b:var(--c)}
+  .fstep.on i{background:#fff;color:#111}
+  .tchips{display:flex;gap:6px;flex:none}
+  .chip2{padding:6px 10px!important;font-size:13.5px!important;min-height:0!important;--t:#a78bfa;--b:#7c3aed;--s:#4c1d95}
+  .chip2.lk{--t:#f87171;--b:#dc2626;--s:#7f1d1d}
+  .chip2.lk.has b{animation:cntPulse 1.6s ease-in-out infinite}
+  .pnlwrap{position:fixed;z-index:1150;left:max(10px,env(safe-area-inset-left,0px));top:calc(70px + env(safe-area-inset-top,0px));width:min(420px,calc(100vw - 20px));
+    max-height:calc(100% - 84px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);
+    border-radius:18px;box-shadow:0 6px 0 #070b0e,0 18px 40px rgba(0,0,0,.55);overflow:hidden}
+  .pnlhead{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .pnlhead b{flex:1;font-family:var(--head);font-size:18px}
+  .pnlhead .pdot{width:12px;height:22px;border-radius:4px;background:var(--pc,#3b82f6)}
+  .pnlhead button{padding:5px 11px!important;min-height:0!important}
+  .pnlbody{overflow-y:auto;padding:12px;overscroll-behavior:contain}
+  .pnl{display:grid;gap:10px}
+  .pnl h3{margin:2px 0 0;font-family:var(--head);font-size:15px}
+  .pnlnav{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;border-top:1px solid var(--line)}
+  .pnlnav button{padding:7px 14px!important;min-height:0!important;font-size:14px!important}
+  .slist{display:grid;gap:6px;max-height:46vh;overflow:auto}
+  .lrow{display:grid;grid-template-columns:auto 1fr auto auto;gap:4px 10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--card2);border:2px solid transparent;cursor:pointer}
+  .lrow.sel{border-color:#a78bfa;background:rgba(139,92,246,.15)}
+  .lrow .lk{min-width:44px;height:30px;padding:0 8px;border-radius:9px;background:var(--sensor);color:#fff;display:grid;place-items:center;font-family:var(--head);font-weight:800;font-size:13px;white-space:nowrap}
+  .lrow .lt{min-width:0;display:grid}
+  .lrow .lt b{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lrow .lt span{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .lrow button{padding:5px 9px!important;min-height:0!important;font-size:13px!important}
+  .ledit{display:grid;gap:6px;padding:10px;border-radius:12px;background:var(--card2);border:2px solid #a78bfa}
+  .ledit .grid2 input{font-size:14px}
   @media (max-width:760px){
     html,body{overscroll-behavior:none}
-    .app{display:block;height:100%}
-    #map{position:fixed;inset:0;height:auto;min-height:0;z-index:1}
-    aside{position:fixed;left:0;right:0;bottom:0;z-index:1100;height:var(--sheet,46vh);max-height:calc(100% - 56px - env(safe-area-inset-top,0px));border:1px solid var(--line);border-bottom:none;border-radius:24px 24px 0 0;
-      box-shadow:0 -10px 30px rgba(0,0,0,.5);transition:height .25s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom,0px);overscroll-behavior:contain}
-    aside.dragging{transition:none}
-    .sheetbar{display:flex;position:sticky;top:0;z-index:5;align-items:center;gap:10px;padding:16px 12px 8px 16px;min-height:58px;background:var(--panel);border-radius:24px 24px 0 0;border-bottom:1px solid var(--line);touch-action:none;cursor:grab}
-    .sheetbar .grip{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:46px;height:5px;border-radius:3px;background:#3a4b58}
-    .sheetbar button{min-height:36px;padding:4px 14px;font-size:15px;flex:none}
-    .sheetbar .sstat{flex:1;min-width:0;font-size:13px;font-weight:700;color:#86efac;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    header{padding-top:4px}
-    .sec{margin:10px}
+    .topbar{left:8px;right:8px;max-width:none;top:calc(8px + env(safe-area-inset-top,0px));padding:5px 6px;gap:6px}
+    .tbrand{display:none}
+    .fstep{padding:6px 15px 6px 14px!important;font-size:13px!important;margin-left:-7px}
+    .fstep i{width:20px;height:20px;font-size:11.5px}
+    .fstep em{display:none}
+    .fstep span{display:none}
+    .tchips .chip2{padding:5px 8px!important;font-size:12.5px!important}
+    .seg.lang button{padding:4px 7px!important}
+    .pnlwrap{left:0;right:0;bottom:0;top:auto;width:auto;max-height:72vh;border-radius:22px 22px 0 0;border-bottom:none;padding-bottom:env(safe-area-inset-bottom,0px)}
     input,select{font-size:16px}
-    button{min-height:42px}
-    button.x{min-height:32px}
-    .item button.x,.layer button{min-height:30px}
-    .libtab{top:calc(64px + env(safe-area-inset-top,0px));writing-mode:horizontal-tb;padding:10px 12px!important;border-radius:14px 0 0 14px!important}
+    .libtab{top:calc(64px + env(safe-area-inset-top,0px));writing-mode:horizontal-tb;padding:9px 11px!important;border-radius:14px 0 0 14px!important}
     .libtab span{writing-mode:horizontal-tb}
-    .leaflet-top{top:env(safe-area-inset-top,0px)}
-    .leaflet-bottom{bottom:var(--sheet,46vh)}
-    .leaflet-control-layers{margin-top:10px}
     .drawer{width:100vw}
-    .sheet-full .libtab{display:none}
     .modal{padding-block:10px;align-items:start}
-    .mhead b{font-size:17px}
-    .mstage,.svframe{border-radius:14px}
-    .modebar{top:calc(8px + env(safe-area-inset-top,0px))}
   }
 </style>
 </head>
 <body>
 <div class="app">
 <aside id="side">
-  <div class="sheetbar" id="sheetBar"><span class="sstat" id="sheetStat"></span><span class="grip"></span><button id="sheetBtn" class="blue" aria-label="Panel">⬆</button></div>
-  <header>
-    <div class="row" style="justify-content:space-between;flex-wrap:nowrap">
-      <div class="brand"><div class="logo" aria-hidden="true">💧</div><div><h1>Point Of Interest (POI)</h1></div></div>
-      <div class="seg lang"><button id="lgBM">BM</button><button id="lgEN">EN</button></div>
-    </div>
-    <p class="hint" data-i18n="subtitle"></p>
-  </header>
-
-  <div class="sec tilesec">
-    <div class="tiles">
-      <button class="tile tsen" id="tileSen"><span class="tlab" data-i18n="tileSen"></span><b id="cntSen">0</b><span class="tsub" data-i18n="tileTap"></span></button>
-      <button class="tile tleak" id="tileLeak"><span class="tlab" data-i18n="tileLeak"></span><b id="cntLeak">0</b><span class="tsub" data-i18n="tileTap"></span></button>
-    </div>
-    <div id="status" class="status" hidden></div>
+  <div class="topbar" id="topbar">
+    <div class="tbrand"><div class="logo sm" aria-hidden="true">💧</div><b>POI</b></div>
+    <nav class="flow" id="flow" aria-label="Steps">
+      <button class="fstep" data-pnl="1" style="--c:#3b82f6"><i>1</i><span data-i18n="f1"></span><em id="fc1"></em></button>
+      <button class="fstep" data-pnl="2" style="--c:#8b5cf6"><i>2</i><span data-i18n="f2"></span><em id="fc2"></em></button>
+      <button class="fstep" data-pnl="3" style="--c:#06b6d4"><i>3</i><span data-i18n="f3"></span><em id="fc3"></em></button>
+      <button class="fstep" data-pnl="4" style="--c:#ef4444"><i>4</i><span data-i18n="f4"></span><em id="fc4"></em></button>
+      <button class="fstep" data-pnl="5" style="--c:#22c55e"><i>5</i><span data-i18n="f5"></span><em id="fc5"></em></button>
+    </nav>
+    <div class="tchips"><button class="chip2" id="tileSen" data-i18n-title="tileSen">📍 <b id="cntSen">0</b></button><button class="chip2 lk" id="tileLeak" data-i18n-title="tileLeak">💧 <b id="cntLeak">0</b></button></div>
+    <div class="seg lang"><button id="lgBM">BM</button><button id="lgEN">EN</button></div>
   </div>
+  <div id="status" class="status" hidden></div>
 
-  <!-- 1 PLAN + PIPES -->
-  <div class="sec">
-    <h2><span class="n" style="--c:#3b82f6">1</span><span data-i18n="s1"></span></h2>
+  <div class="pnlwrap" id="pnlWrap" hidden>
+    <div class="pnlhead"><span class="pdot" id="pnlDot"></span><b id="pnlTitle"></b><button class="danger" id="pnlX" aria-label="Close">✕</button></div>
+    <div class="pnlbody" id="pnlBody">
+      <section class="pnl" id="pnl1" hidden>
     <label class="file"><span data-i18n="upload"></span><input type="file" id="fileImg" accept="image/*,.pdf,.dxf,.dwg"></label>
     <button class="purple" id="btnTut" data-i18n="tutBtn"></button>
     <div id="loadMsg" class="hint"></div>
@@ -394,13 +426,20 @@
         <div id="pipeList" class="scroll"></div>
       </div>
     </details>
-  </div>
+      </section>
 
-  <!-- 2 SENSORS + LEAK -->
-  <div class="sec">
-    <h2><span class="n" style="--c:#8b5cf6">2</span><span data-i18n="s2"></span></h2>
-    <button class="purple" id="btnTutLeak" data-i18n="tutBtn2"></button>
+      <section class="pnl" id="pnl2" hidden>
     <p class="hint" data-i18n="s3Hint"></p>
+    <div class="sub">
+      <h3 data-i18n="xlsH"></h3>
+      <p class="hint" data-i18n="xlsHint"></p>
+      <div class="row">
+        <button class="blue" id="btnXlsTpl" data-i18n="xlsTpl"></button>
+        <button class="pri" id="btnXlsImp" data-i18n="xlsImp"></button>
+        <input type="file" id="xlsIn" accept=".xlsx,.xls,.csv" hidden>
+      </div>
+      <div id="xlsMsg" class="hint"></div>
+    </div>
     <div class="sub">
       <h3 data-i18n="addSensorH"></h3>
       <div class="row">
@@ -413,9 +452,11 @@
       </div>
       <div id="sensorErr" class="err"></div>
     </div>
-    <div id="sensorList" class="scroll"></div>
+    <h3><span data-i18n="senListH"></span> <span class="mono muted" id="senCount"></span></h3>
+    <div id="sensorList" class="slist"></div>
+      </section>
 
-    <div class="sub">
+      <section class="pnl" id="pnl3" hidden>
       <h3 data-i18n="grpH"></h3>
       <p class="hint" data-i18n="grpHint"></p>
       <div class="grid2">
@@ -425,7 +466,10 @@
       <button class="purple" id="btnAddGrp" data-i18n="grpAdd"></button>
       <div id="grpErr" class="err"></div>
       <div id="grpList" style="display:grid;gap:8px"></div>
-    </div>
+      </section>
+
+      <section class="pnl" id="pnl4" hidden>
+    <button class="purple" id="btnTutLeak" data-i18n="tutBtn2"></button>
     <h3 data-i18n="leakCalcH" style="margin-top:4px" id="leakCalcH"></h3>
     <label class="lab"><span data-i18n="grpSel"></span><select id="selG"></select></label>
     <div id="abInfo" class="mono muted"></div>
@@ -452,11 +496,9 @@
     <div id="leakErr" class="err"></div>
     <div id="leakList" style="display:grid;gap:8px"></div>
     <input type="file" id="photoIn" accept="image/*" capture="environment" multiple hidden>
-  </div>
+      </section>
 
-  <!-- 3 PROJECT + LIBRARY -->
-  <div class="sec">
-    <h2><span class="n" style="--c:#22c55e">3</span><span data-i18n="s3"></span></h2>
+      <section class="pnl" id="pnl5" hidden>
     <input id="projName" data-i18n-ph="projPh">
     <div class="row">
       <button class="pri big" id="btnSaveLib" data-i18n="saveLib"></button>
@@ -468,10 +510,8 @@
       <input type="file" id="fileProj" accept=".html,.htm,.json" hidden>
     </div>
     <div id="projMsg" class="hint"></div>
-  </div>
-
-  <div class="sec">
     <div class="row">
+
       <button id="btnCsv" class="pri" data-i18n="csv"></button>
       <button id="btnFit" class="blue" data-i18n="fit"></button>
       <button id="btnClear" class="danger" data-i18n="clear"></button>
@@ -488,6 +528,10 @@
       <span class="err" data-i18n="clearQ"></span>
       <button id="yesClear" class="danger" data-i18n="yes"></button><button id="noClear" data-i18n="no"></button>
     </div>
+  
+      </section>
+    </div>
+    <div class="pnlnav"><button id="pnlPrev">◀</button><button class="pri" id="pnlNext"></button></div>
   </div>
 </aside>
 <div id="map"></div>
@@ -578,10 +622,11 @@
     <div class="mctrl">
       <button id="simPlay" class="pri"></button>
       <button id="simRe" class="blue"></button>
-      <input type="range" id="simScrub" min="0" max="40" step="0.01" value="0" aria-label="Timeline">
+      <input type="range" id="simScrub" min="0" max="48" step="0.01" value="0" aria-label="Timeline">
       <span class="mtime" id="simTm"></span>
       <select id="simSpd" aria-label="Speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
       <button id="simRec" class="danger"></button>
+      <button id="simSV" class="blue" hidden></button>
     </div>
     <div id="simMsg" class="hint"></div>
   </div>
@@ -605,7 +650,10 @@ const T={
   s1:'Pelan paip',upload:'📤 Upload pelan · JPG · PNG · PDF · DXF',pdfPage:'Halaman PDF',of:n=>'daripada '+n,
   planHint:'Seret ✥ untuk alih pelan. Tekan ✥ untuk tukar ke mod ⟳ putar, kemudian seret bulatan ⟳ untuk pusing. Seret petak kuning di bucu untuk besar/kecil. Guna ⟲ ⟳ ➖ ➕ untuk laras halus.',
   mbDone:'✔ Siap',mbUndo:'↶ Undo',mbStop:'⏹ Berhenti',mbCancel:'✖ Batal',savedDocs:n=>`Disimpan: Documents/POI-Noise-Logger/${n}`,
-  pinDel:'🗑 Buang pin',grpH:'🔗 Kumpulan sensor (link)',grpHint:'Satu kumpulan = 2 sensor pada paip yang sama (cth A ↔ B). Paip lain, buat kumpulan lain (cth C ↔ D). Lokasi bocor dikira ikut kumpulan.',grpAdd:'➕ Buat kumpulan',grpSel:'Kumpulan (link)',grpName:n=>'Link '+n,grpDup:'Kumpulan dengan dua sensor ini sudah ada.',grpPick2:'Pilih dua sensor berbeza untuk kumpulan.',grpNone:'Belum ada kumpulan. Pilih 2 sensor dan tekan ➕ Buat kumpulan.',needGrp:'Buat & pilih kumpulan sensor dahulu.',grpCalc:'💧 Kira bocor',grpLeaks:n=>`${n} bocor`,grpViaPipe:'ikut paip',grpStraight:'garis lurus',tutBtn2:'🎬 Contoh video: cari lokasi bocor',tutTitle2:'🎬 Cara cari lokasi bocor',
+  pinDel:'🗑 Buang pin',f1:'Pelan paip',f2:'Logger',f3:'Kumpulan',f4:'Lokasi bocor',f5:'Projek',p1:'① Pelan paip',p2:'② Logger',p3:'③ Kumpulan sensor',p4:'④ Lokasi bocor',p5:'⑤ Projek & library',next:'Seterusnya ➜',prev:'◀',
+  xlsH:'📊 Import logger dari Excel',xlsHint:'Muat turun templat, isi nama logger & koordinat (satu baris satu logger), kemudian import. Lajur Kumpulan (pilihan): 2 logger dengan nama kumpulan sama terus jadi satu link.',xlsTpl:'⬇ Templat Excel',xlsImp:'📥 Import Excel / CSV',
+  xlsDone:(n,u,k,g)=>`✔ ${n} logger baru, ${u} dikemas kini${k?`, ${k} baris dilangkau`:''}${g?`, ${g} kumpulan dibuat`:''}.`,xlsBad:'Fail tidak dapat dibaca. Pastikan ada lajur Nama logger, Latitude & Longitude (atau Koordinat).',xlsLoad:'Membaca fail…',
+  senListH:'Senarai logger',editBtn:'✏️',saveBtn:'✔ Simpan',cancelBtn:'Batal',delQ:'Padam?',grpH:'🔗 Kumpulan sensor (link)',grpHint:'Satu kumpulan = 2 sensor pada paip yang sama (cth A ↔ B). Paip lain, buat kumpulan lain (cth C ↔ D). Lokasi bocor dikira ikut kumpulan.',grpAdd:'➕ Buat kumpulan',grpSel:'Kumpulan (link)',grpName:n=>'Link '+n,grpDup:'Kumpulan dengan dua sensor ini sudah ada.',grpPick2:'Pilih dua sensor berbeza untuk kumpulan.',grpNone:'Belum ada kumpulan. Pilih 2 sensor dan tekan ➕ Buat kumpulan.',needGrp:'Buat & pilih kumpulan sensor dahulu.',grpCalc:'💧 Kira bocor',grpLeaks:n=>`${n} bocor`,grpViaPipe:'ikut paip',grpStraight:'garis lurus',tutBtn2:'🎬 Contoh video: cari lokasi bocor',tutTitle2:'🎬 Cara cari lokasi bocor',
   tutCaps2:['Dua noise logger dipasang. Mari cari lokasi bocor di antaranya.','Taip koordinat logger pertama, tekan ➕ Tambah.','Tambah logger kedua dengan cara yang sama.','Tanpa laluan paip, jarak dikira ikut garis lurus: SALAH.','Tekan 🧭 Ikut laluan paip dalam pelan.','Klik sekali pada garisan paip kuning dalam pelan.','Laluan dijejak ikut paip kuning: jarak sebenar 85.0 m.','Pilih sensor rujukan, taip jarak dari correlator, tekan 💧 Tandakan bocor.','Titik bocor berkelip tepat atas paip, dengan koordinat.','Tekan 💬 WhatsApp untuk hantar lokasi kepada team.'],
   tutUi2:{coord:'Koordinat logger',add:'➕ Tambah',route:'🧭 Ikut laluan paip',straight:'Garis lurus: 60.6 m ✗',via:'Ikut paip: 85.0 m ✓',straightS:'garis lurus',viaS:'ikut paip 85.0 m',pick:'Klik garisan paip kuning dalam pelan',from:'Diukur dari',dist:'Jarak (m)',mark:'💧 Tandakan bocor',leak:'SASARAN BOCOR',fromS:'dari',done:'✔ Lokasi bocor dihantar kepada team'},routeBtn:'🧭 Ikut laluan paip dalam pelan',routeTol:'Toleransi warna',routeHint:(a,b)=>`Klik pada garisan paip (cth kuning) dalam pelan, di antara ${a} dan ${b}.`,routeBusy:'Menjejak garisan paip…',routeOk:(a,b,d)=>`✔ Laluan ${a} → ${b} ikut garisan pelan: ${d}. Lokasi bocor dikira semula.`,routeFail:'Garisan terputus atau sensor jauh dari garisan itu. Klik bahagian garisan yang lebih jelas, naikkan toleransi warna, atau lukis bahagian terputus dengan ✏️ Lukis paip manual.',routeNoPlan:'Upload pelan dahulu.',routeNeed:'Pilih dua sensor berbeza dahulu.',routeName:(a,b)=>`Laluan ${a}–${b}`,tutBtn:'🎬 Contoh video: laras skala pelan',tutTitle:'🎬 Cara laras drawing ikut skala peta',
   tutCaps:['Masalah: drawing lebih kecil & senget, tak sama skala dengan peta.','Tekan butang 📐 Laras ikut titik rujukan.','Titik 1: klik simpang jalan pada PELAN.','Klik simpang yang SAMA pada PETA.','Titik 2: klik simpang lain yang JAUH pada PELAN.','Klik simpang yang sama pada PETA.','Pelan dilaras automatik: skala, putaran & kedudukan.','Semak ralat purata, kemudian tekan ✔ Siap.','Siap! Paip kini tepat di atas peta.'],
@@ -674,11 +722,11 @@ const T={
   simBtn:'🎬 Simulasi',simTitle:n=>'🎬 Simulasi · '+n,loadingMap:'Memuat imej satelit…',simIntro1:'SIMULASI',simIntro2:'Pengesanan kebocoran paip',
   simPlay:'▶ Main',simPause:'❚❚ Jeda',simRe:'↺ Ulang',simRec:'⏺ Rakam video',simRecing:'Merakam… biarkan tetingkap ini terbuka hingga tamat.',simRecDone:'Video (.webm) dimuat turun.',simRecNo:'Browser ini tidak menyokong rakaman video.',
   simTaint:'Imej satelit tidak membenarkan rakaman, jadi video dirakam dengan latar peta ringkas.',
-  simLen:'Panjang paip',simCorrData:'Data correlator',simRoute:'ikut paip',simHidden:'Bocor tersembunyi?',simArrive:'Masa bunyi sampai',simCorr:'Korelasi silang',simLag:'Sela masa (ms)',simPeak:'Puncak',
+  simLen:'Panjang paip',simSV:'🏙 Street View',sim3dLabel:'SASARAN BOCOR',simCorrData:'Data correlator',simRoute:'ikut paip',simHidden:'Bocor tersembunyi?',simArrive:'Masa bunyi sampai',simCorr:'Korelasi silang',simLag:'Sela masa (ms)',simPeak:'Puncak',
   simFrom:x=>'dari '+x,simLeak:'SASARAN BOCOR',simTol:'Toleransi',simDig:'GALI DI SINI',simFound:'Lokasi bocor dijumpai ✓',simV:v=>`v = ${v} m/s`,
   simCap:[o=>`Kawasan kajian${o.road?': '+o.road:''}.`,o=>o.plan?'Pelan paip dilaraskan pada imej satelit.':'Imej satelit kawasan paip.',o=>`Laluan paip dilukis: ${o.len} keseluruhan.`,
     o=>`Sensor ${o.A} dan ${o.B} dipasang. Jarak antara keduanya ikut paip: ${o.D}.`,o=>`Bunyi bocor merambat sepanjang paip, sampai ke ${o.first} dahulu, kemudian ${o.second}.`,
-    o=>`Data correlator: bocor ${o.raw} dari ${o.ref}.`,o=>`${o.raw} diukur dari ${o.ref} ikut laluan paip.`,o=>`Sasaran bocor: ${o.ll}.`,o=>'Sahkan dengan ground mic, kemudian gali di titik ini.'],
+    o=>`Data correlator: bocor ${o.raw} dari ${o.ref}.`,o=>`${o.raw} diukur dari ${o.ref} ikut laluan paip.`,o=>`Sasaran bocor: ${o.ll}.`,o=>'Sahkan dengan ground mic, kemudian gali di titik ini.',o=>`Paparan aras jalan: titik bocor terus di atas jalan${o.road?' · '+o.road:''}.`],
   csvPipe:'PAIP',csvPipeH:['Nama','Warna','Panjang (m)','Jalan'],csvSen:'SENSOR',csvSenH:['Label','Nama','Lat','Lng','Paip','Chainage (m)'],
   csvLeak:'SASARAN BOCOR',csvLeakH:['No','Sensor A','Sensor B','Jarak paip A-B (m)','Diukur dari','Jarak (m)','Toleransi (m)','Jalan','Lat','Lng','Google Maps'],csvFile:'lokasi-bocor.csv'
  },
@@ -692,7 +740,10 @@ const T={
   s1:'Pipe plan',upload:'📤 Upload plan · JPG · PNG · PDF · DXF',pdfPage:'PDF page',of:n=>'of '+n,
   planHint:'Drag ✥ to move the plan. Tap ✥ to switch to ⟳ rotate mode, then drag the ⟳ knob to turn it. Drag the yellow corner squares to resize. Use ⟲ ⟳ ➖ ➕ for fine adjustment.',
   mbDone:'✔ Done',mbUndo:'↶ Undo',mbStop:'⏹ Stop',mbCancel:'✖ Cancel',savedDocs:n=>`Saved: Documents/POI-Noise-Logger/${n}`,
-  pinDel:'🗑 Remove pin',grpH:'🔗 Sensor groups (links)',grpHint:'One group = 2 sensors on the same pipe (e.g. A ↔ B). Another pipe gets another group (e.g. C ↔ D). Leak locations are calculated per group.',grpAdd:'➕ Create group',grpSel:'Group (link)',grpName:n=>'Link '+n,grpDup:'A group with these two sensors already exists.',grpPick2:'Choose two different sensors for the group.',grpNone:'No groups yet. Choose 2 sensors and press ➕ Create group.',needGrp:'Create & choose a sensor group first.',grpCalc:'💧 Locate leak',grpLeaks:n=>`${n} leaks`,grpViaPipe:'along pipe',grpStraight:'straight line',tutBtn2:'🎬 Example video: locate a leak',tutTitle2:'🎬 How to locate a leak',
+  pinDel:'🗑 Remove pin',f1:'Pipe plan',f2:'Loggers',f3:'Groups',f4:'Leak location',f5:'Project',p1:'① Pipe plan',p2:'② Loggers',p3:'③ Sensor groups',p4:'④ Leak location',p5:'⑤ Project & library',next:'Next ➜',prev:'◀',
+  xlsH:'📊 Import loggers from Excel',xlsHint:'Download the template, fill in logger names & coordinates (one row per logger), then import. Group column (optional): 2 loggers with the same group name become one link.',xlsTpl:'⬇ Excel template',xlsImp:'📥 Import Excel / CSV',
+  xlsDone:(n,u,k,g)=>`✔ ${n} new loggers, ${u} updated${k?`, ${k} rows skipped`:''}${g?`, ${g} groups created`:''}.`,xlsBad:'The file could not be read. Make sure it has Logger name, Latitude & Longitude (or Coordinates) columns.',xlsLoad:'Reading file…',
+  senListH:'Logger list',editBtn:'✏️',saveBtn:'✔ Save',cancelBtn:'Cancel',delQ:'Delete?',grpH:'🔗 Sensor groups (links)',grpHint:'One group = 2 sensors on the same pipe (e.g. A ↔ B). Another pipe gets another group (e.g. C ↔ D). Leak locations are calculated per group.',grpAdd:'➕ Create group',grpSel:'Group (link)',grpName:n=>'Link '+n,grpDup:'A group with these two sensors already exists.',grpPick2:'Choose two different sensors for the group.',grpNone:'No groups yet. Choose 2 sensors and press ➕ Create group.',needGrp:'Create & choose a sensor group first.',grpCalc:'💧 Locate leak',grpLeaks:n=>`${n} leaks`,grpViaPipe:'along pipe',grpStraight:'straight line',tutBtn2:'🎬 Example video: locate a leak',tutTitle2:'🎬 How to locate a leak',
   tutCaps2:['Two noise loggers are installed. Let us find the leak between them.','Type the first logger coordinates, press ➕ Add.','Add the second logger the same way.','Without a pipe route the distance is a straight line: WRONG.','Press 🧭 Follow the pipe line in the plan.','Click once on the yellow pipe line in the plan.','The route follows the yellow pipe: true distance 85.0 m.','Choose the reference sensor, type the correlator distance, press 💧 Mark leak.','The leak point blinks right on the pipe, with coordinates.','Press 💬 WhatsApp to send the location to the team.'],
   tutUi2:{coord:'Logger coordinates',add:'➕ Add',route:'🧭 Follow pipe line',straight:'Straight line: 60.6 m ✗',via:'Along pipe: 85.0 m ✓',straightS:'straight line',viaS:'along pipe 85.0 m',pick:'Click the yellow pipe line in the plan',from:'Measured from',dist:'Distance (m)',mark:'💧 Mark leak',leak:'LEAK TARGET',fromS:'from',done:'✔ Leak location sent to the team'},routeBtn:'🧭 Follow the pipe line in the plan',routeTol:'Colour tolerance',routeHint:(a,b)=>`Click on the pipe line (e.g. yellow) in the plan, between ${a} and ${b}.`,routeBusy:'Tracing the pipe line…',routeOk:(a,b,d)=>`✔ Route ${a} → ${b} follows the plan line: ${d}. Leak location recalculated.`,routeFail:'The line is broken or a sensor is far from it. Click a clearer part of the line, raise the colour tolerance, or draw the broken part with ✏️ Draw pipes manually.',routeNoPlan:'Upload a plan first.',routeNeed:'Choose two different sensors first.',routeName:(a,b)=>`Route ${a}–${b}`,tutBtn:'🎬 Example video: fix plan scale',tutTitle:'🎬 How to fit a drawing to the map scale',
   tutCaps:['Problem: the drawing is smaller & tilted, not the same scale as the map.','Press 📐 Align with reference points.','Point 1: click a road junction on the PLAN.','Click the SAME junction on the MAP.','Point 2: click another junction FAR away on the PLAN.','Click the same junction on the MAP.','The plan is aligned automatically: scale, rotation & position.','Check the average error, then press ✔ Done.','Done! The pipes now sit exactly on the map.'],
@@ -761,11 +812,11 @@ const T={
   simBtn:'🎬 Simulation',simTitle:n=>'🎬 Simulation · '+n,loadingMap:'Loading satellite imagery…',simIntro1:'SIMULATION',simIntro2:'Pipe leak detection',
   simPlay:'▶ Play',simPause:'❚❚ Pause',simRe:'↺ Replay',simRec:'⏺ Record video',simRecing:'Recording… keep this window open until it ends.',simRecDone:'Video (.webm) downloaded.',simRecNo:'This browser cannot record video.',
   simTaint:'The satellite imagery does not allow recording, so the video uses a plain map background.',
-  simLen:'Pipe length',simCorrData:'Correlator data',simRoute:'along pipe',simHidden:'Hidden leak?',simArrive:'Noise arrival time',simCorr:'Cross-correlation',simLag:'Time lag (ms)',simPeak:'Peak',
+  simLen:'Pipe length',simSV:'🏙 Street View',sim3dLabel:'LEAK TARGET',simCorrData:'Correlator data',simRoute:'along pipe',simHidden:'Hidden leak?',simArrive:'Noise arrival time',simCorr:'Cross-correlation',simLag:'Time lag (ms)',simPeak:'Peak',
   simFrom:x=>'from '+x,simLeak:'LEAK TARGET',simTol:'Tolerance',simDig:'DIG HERE',simFound:'Leak location found ✓',simV:v=>`v = ${v} m/s`,
   simCap:[o=>`Study area${o.road?': '+o.road:''}.`,o=>o.plan?'The pipe plan is aligned to the satellite image.':'Satellite image of the pipe area.',o=>`Pipe route traced: ${o.len} in total.`,
     o=>`Sensors ${o.A} and ${o.B} are fitted. Distance between them along the pipe: ${o.D}.`,o=>`Leak noise travels along the pipe, reaching ${o.first} first, then ${o.second}.`,
-    o=>`Correlator data: leak ${o.raw} from ${o.ref}.`,o=>`${o.raw} measured from ${o.ref} along the pipe route.`,o=>`Leak target: ${o.ll}.`,o=>'Confirm with a ground mic, then dig at this point.'],
+    o=>`Correlator data: leak ${o.raw} from ${o.ref}.`,o=>`${o.raw} measured from ${o.ref} along the pipe route.`,o=>`Leak target: ${o.ll}.`,o=>'Confirm with a ground mic, then dig at this point.',o=>`Street-level view: the leak point right on the street${o.road?' · '+o.road:''}.`],
   csvPipe:'PIPES',csvPipeH:['Name','Colour','Length (m)','Road'],csvSen:'SENSORS',csvSenH:['Label','Name','Lat','Lng','Pipe','Chainage (m)'],
   csvLeak:'LEAK TARGETS',csvLeakH:['No','Sensor A','Sensor B','Pipe distance A-B (m)','Measured from','Distance (m)','Tolerance (m)','Road','Lat','Lng','Google Maps'],csvFile:'leak-locations.csv'
  }
@@ -824,6 +875,7 @@ map.on('baselayerchange',e=>{const k=Object.keys(BASES).find(x=>BASES[x]===e.lay
 hyb.addTo(map);
 buildLayerCtl();setupGoogle();
 L.control.scale({imperial:false}).addTo(map);
+try{map.zoomControl.setPosition('bottomright');}catch(e){}
 map.createPane('plan').style.zIndex=350;
 
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -965,7 +1017,8 @@ function setMode(m){
       :m==='sensor'?`<button class="pri" data-mb="stop">${t('mbStop')}</button>`
       :m==='ref'?`<button class="blue" data-mb="refundo">${t('mbUndo')}</button><button class="pri" data-mb="refdone">${t('mbDone')}</button><button class="danger" data-mb="refcancel">${t('mbCancel')}</button>`
       :`<button class="danger" data-mb="stop">${t('mbCancel')}</button>`;
-    if(isMobile())setSheet('peek');}
+    if(curPnl){pnlBeforeMode=curPnl;closePnl();}}
+  else if(pnlBeforeMode){openPnl(pnlBeforeMode);pnlBeforeMode=null;}
   status();
 }
 function status(){
@@ -1029,13 +1082,15 @@ function renderSide(){
       <input data-pipe="${i}" value="${esc(p.name)}"><span class="mono">${fmt(pipeLen(p))}</span>
       <button class="x" data-delpipe="${i}" title="${t('delPipe')}">✕</button>
       ${p.road?`<span class="road">${esc(p.road)}</span>`:''}</div>`).join('')||`<span class="hint">${t('noPipes')}</span>`;
-  $('sensorList').innerHTML=S.sensors.map((s,i)=>{const sn=snap(s),on=sn&&sn.d<=SNAPMAX;return `<div class="sitem">
-      <input class="slbl" data-slbl="${i}" value="${esc(s.label)}" aria-label="${t('labelPh')}">
-      <input data-sen="${i}" value="${esc(s.name||'')}" placeholder="${t('sensorNamePh')}">
-      <button class="x" data-delsen="${i}" title="${t('delSensor')}">✕</button>
-      <input class="mono scoord" data-scoord="${i}" value="${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}" inputmode="decimal">
-      <button class="blue sgo" data-sgo="${i}">${t('goSensor')}</button>
-      ${on?`<span class="mono muted" title="${t('chTitle')}">CH ${sn.s.toFixed(1)} m</span>`:''}</div>`;}).join('')||`<span class="hint">${t('noSensors')}</span>`;
+  $('sensorList').innerHTML=S.sensors.map((s,i)=>{
+    if(s.id===editSen)return `<div class="ledit">
+      <div class="grid2"><label class="lab">${t('labelPh')}<input data-slbl="${i}" value="${esc(s.label)}"></label><label class="lab">${t('sensorNamePh')}<input data-sen="${i}" value="${esc(s.name||'')}"></label></div>
+      <label class="lab">${t('coordPh').split(':')[0]}<input class="mono" data-scoord="${i}" value="${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}" inputmode="decimal"></label>
+      <div class="row"><button class="pri" data-sdone="1">${t('saveBtn')}</button><button class="danger" data-delsen="${i}">🗑</button></div></div>`;
+    const sn=snap(s),on=sn&&sn.d<=SNAPMAX;
+    return `<div class="lrow${s.id===selSen?' sel':''}" data-ssel="${i}"><span class="lk">${esc(s.label)}</span>
+      <span class="lt"><b>${esc(s.name||s.label)}</b><span>${s.lat.toFixed(6)}, ${s.lng.toFixed(6)}${on?' · CH '+sn.s.toFixed(1):''}</span></span>
+      <button data-sedit="${i}" title="Edit">✏️</button>${delSen===s.id?`<button class="danger" data-delsen="${i}">${t('delQ')}</button>`:`<button class="x" data-sdel="${i}" title="${t('delSensor')}">✕</button>`}</div>`;}).join('')||`<span class="hint">${t('noSensors')}</span>`;
   const opts=S.sensors.map(s=>`<option value="${s.id}">${esc(s.label)}${s.name?' · '+esc(s.name):''}</option>`).join('');
   const a=$('selA').value,b=$('selB').value;
   $('selA').innerHTML=opts;$('selB').innerHTML=opts;
@@ -1066,7 +1121,7 @@ function renderSide(){
       ${(lk.photos||[]).length?`<div class="thumbs">${lk.photos.map((ph,k)=>`<button class="th" data-photoview="${lk.id}:${k}"><img src="${ph}" alt=""></button>`).join('')}</div>`:''}
       </div>`;}).join('');
   calc();status();
-  $('cntSen').textContent=S.sensors.length;$('cntLeak').textContent=S.leaks.length;$('tileLeak').classList.toggle('has',S.leaks.length>0);
+  $('cntSen').textContent=S.sensors.length;$('cntLeak').textContent=S.leaks.length;$('tileLeak').classList.toggle('has',S.leaks.length>0);updateFlow();$('senCount').textContent=S.sensors.length?`(${S.sensors.length})`:'';
 }
 const aside=document.querySelector('aside');
 aside.addEventListener('input',e=>{
@@ -1087,10 +1142,14 @@ aside.addEventListener('click',e=>{
   if(d.delpipe!==undefined){S.pipes.splice(+d.delpipe,1);resnapAll();save();draw();}
   if(d.delsen!==undefined){const id=S.sensors[+d.delsen].id;S.sensors.splice(+d.delsen,1);S.leaks=S.leaks.filter(l=>l.a!==id&&l.b!==id);S.groups=(S.groups||[]).filter(g=>g.a!==id&&g.b!==id);save();draw();}
   if(d.delg!==undefined){const g=S.groups[+d.delg];S.groups.splice(+d.delg,1);S.leaks=S.leaks.filter(l=>l.g!==g.id);save();draw();}
-  if(d.gsel!==undefined){const g=S.groups[+d.gsel];$('selG').value=g.id;calc();$('leakCalcH').scrollIntoView({behavior:'smooth',block:'start'});}
+  if(d.gsel!==undefined){const g=S.groups[+d.gsel];openPnl(4);$('selG').value=g.id;calc();}
   if(d.delleak!==undefined){S.leaks.splice(+d.delleak,1);save();draw();}
   if(d.sim!==undefined){openSim(S.leaks[+d.sim]);return;}
-  if(d.sgo!==undefined){const se=S.sensors[+d.sgo];if(se)map.setView([se.lat,se.lng],19);}
+  if(d.sedit!==undefined){e.stopPropagation();editSen=S.sensors[+d.sedit].id;delSen=null;renderSide();return;}
+  if(d.sdone!==undefined){editSen=null;draw();return;}
+  if(d.sdel!==undefined){e.stopPropagation();delSen=S.sensors[+d.sdel].id;renderSide();return;}
+  if(d.delsen===undefined){const row=e.target.closest('[data-ssel]');if(row&&!e.target.closest('button')){const se=S.sensors[+row.dataset.ssel];selSen=se.id;delSen=null;renderSide();map.setView([se.lat,se.lng],19);
+    G.eachLayer(l=>{if(l.getLatLng&&l.getTooltip&&l.getTooltip()){const p=l.getLatLng();if(Math.abs(p.lat-se.lat)<1e-9&&Math.abs(p.lng-se.lng)<1e-9)l.openTooltip();}});setSheet('peek');}}
   if(d.zoom!==undefined){e.preventDefault();const lk=S.leaks[+d.zoom];if(lk.lat!=null)map.setView([lk.lat,lk.lng],19);}
   if(d.copy!==undefined){const b=e.target,done=()=>{b.textContent=t('copied');setTimeout(()=>b.textContent=t('copy'),1500);};
     (navigator.clipboard?navigator.clipboard.writeText(d.copy):Promise.reject()).then(done).catch(()=>{
@@ -1281,7 +1340,7 @@ function drawHandles(){
   [...$('viewSeg').children].forEach(b=>b.classList.toggle('on',b.dataset.view===(IMG.view||'full')));renderHueChips();
   $('vivid').value=Math.round(VIV()*100);$('vividTxt').textContent=Math.round(VIV()*100)+'%';$('thick').checked=THK();
   $('btnLock').textContent=IMG.locked?t('unlock'):t('lock');
-  $('btnHideImg').textContent=IMG.hidden?t('show'):t('hide');
+  $('btnHideImg').textContent=IMG.hidden?t('show'):t('hide');updateFlow();
   if(IMG.locked||IMG.hidden)return;
   const k0=corners(),pts=IMG.free?[k0[0],k0[1],k0[3]]:k0;
   pts.forEach((p,i)=>{let st=null;
@@ -1807,7 +1866,7 @@ $('btnCsv').onclick=()=>{
 
 /* ================= leak simulation ================= */
 const tr=(...x)=>t(...x);
-const SW=1280,SH=720,SDUR=40,SCH=[0,3,7,11,14,22,28,32,35];
+const SW=1280,SH=720,SDUR=48,SCH=[0,3,7,11,14,22,28,32,35,40];
 const sc2=$('simCv').getContext('2d');
 let SIMD=null,simT=0,simPlaying=false,simSpeed=1,simLast=null,simRAF=0,simRec=null;
 function mercPx(lat,lng,z){const n=256*Math.pow(2,z),sn=Math.sin(lat*Math.PI/180);return{x:(lng+180)/360*n,y:(0.5-Math.log((1+sn)/(1-sn))/(4*Math.PI))*n};}
@@ -1822,7 +1881,7 @@ function spanel(x,y,w,h,a=1){sc2.save();sc2.globalAlpha*=a;srr(sc2,x,y,w,h,14);s
 async function openSim(lk){
   const r=computeLeak(lk);if(r.err){$('leakErr').textContent=r.err;return;}
   $('simModal').hidden=false;$('simMsg').textContent='';$('simTitle').textContent=tr('simTitle',$('projName').value.trim()||'Point Of Interest (POI)');
-  $('simPlay').textContent=tr('simPlay');$('simRe').textContent=tr('simRe');$('simRec').textContent=tr('simRec');$('simRec').disabled=false;
+  $('simPlay').textContent=tr('simPlay');$('simRe').textContent=tr('simRe');$('simRec').textContent=tr('simRec');$('simSV').textContent=tr('simSV');$('simSV').hidden=!gKey();$('simRec').disabled=false;
   $('simLoad').hidden=false;$('simLoad').textContent=tr('loadingMap');
   simPlaying=false;simT=0;cancelAnimationFrame(simRAF);
   SIMD=await buildSim(lk,r,true);
@@ -1873,7 +1932,7 @@ function rStroke(o,d0,d1){if(d1<d0)[d0,d1]=[d1,d0];sc2.beginPath();const p=rAt(o
 function simCapData(o){const ll=`${o.r.lat.toFixed(6)}, ${o.r.lng.toFixed(6)}`;const aFirst=o.dA<=o.D-o.dA;
   return{road:o.lk.road||'',plan:!!o.plan,len:fmt(o.totalLen),A:o.Alab,B:o.Blab,D:fmt(o.D),first:aFirst?o.Alab:o.Blab,second:aFirst?o.Blab:o.Alab,
     dt:(Math.abs(o.dt)*1000).toFixed(1),raw:fmt(o.raw),ref:o.refLab,ll};}
-function simRender(t){
+function simTop(t){
   const o=SIMD;if(!o)return;const c=sc2;
   c.setTransform(1,0,0,1,0,0);c.fillStyle='#0c1210';c.fillRect(0,0,SW,SH);
   const z=sease(sseg(t,35,38)),s=slerp(o.s0,o.sEnd,z),cx=slerp(SW/2,o.leak.x,z),cy=slerp(SH/2,o.leak.y,z);
@@ -1924,7 +1983,52 @@ function simRender(t){
     c.beginPath();c.moveTo(o.leak.x-q,o.leak.y-q);c.lineTo(o.leak.x+q,o.leak.y+q);c.moveTo(o.leak.x+q,o.leak.y-q);c.lineTo(o.leak.x-q,o.leak.y+q);c.stroke();
     stxt(tr('simDig'),o.leak.x,o.leak.y+q+26/s,18/s,'#fde047',800,SHEAD,'center');c.restore();}
   c.restore();
+}
+function simRender(t){
+  const o=SIMD;if(!o)return;
+  if(t<40)simTop(t);else{if(t<41.2)simTop(40);sim3D(t,sseg(t,40,41.2));}
   simPanels(t);
+}
+/* ---- street-level 3D view built from the satellite ground texture ---- */
+function simGround(o){
+  if(o.R3)return o.R3;
+  const k=o.k,ppm=Math.pow(2,o.Z)*256/(40075016.7*Math.cos(o.r.lat*Math.PI/180)),g=document.createElement('canvas');g.width=o.base.width;g.height=o.base.height;
+  const c=g.getContext('2d');c.drawImage(o.base,0,0);c.scale(k,k);c.lineCap='round';c.lineJoin='round';
+  o.pipes.forEach(p=>{c.strokeStyle='rgba(255,255,255,.75)';c.lineWidth=Math.max(2.2,1.6*ppm);c.beginPath();p.pts.forEach((q,i)=>i?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y));c.stroke();
+    c.strokeStyle=p.col;c.lineWidth=Math.max(1.4,1.0*ppm);c.stroke();});
+  c.strokeStyle='rgba(253,224,71,.9)';c.lineWidth=Math.max(1.2,.7*ppm);c.setLineDash([2*ppm,2*ppm]);c.beginPath();o.R.forEach((q,i)=>i?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y));c.stroke();c.setLineDash([]);
+  const tolPx=Math.max(1.5,(o.lk.tol||2))*ppm;c.fillStyle='rgba(239,68,68,.35)';c.strokeStyle='rgba(239,68,68,.95)';c.lineWidth=Math.max(.8,.35*ppm);c.beginPath();c.arc(o.leak.x,o.leak.y,tolPx,0,7);c.fill();c.stroke();
+  // rotate so the camera looks along the pipe towards the leak
+  const pl=rAt(o,o.dA),p1=o.dA>=8?rAt(o,Math.max(0,o.dA-15)):pl,p2=o.dA>=8?pl:rAt(o,Math.min(o.D,o.dA+15));let th=Math.atan2(p2.y-p1.y,p2.x-p1.x);if(!isFinite(th)||(p1.x===p2.x&&p1.y===p2.y))th=-Math.PI/2;
+  const phi=-Math.PI/2-th,Dm=Math.ceil(Math.hypot(g.width,g.height)),R=document.createElement('canvas');R.width=R.height=Dm;const rc=R.getContext('2d');
+  rc.fillStyle='#3d4a3a';rc.fillRect(0,0,Dm,Dm);rc.translate(Dm/2,Dm/2);rc.rotate(phi);rc.drawImage(g,-o.leak.x*k,-o.leak.y*k);
+  const cs=Math.cos(phi),sn=Math.sin(phi),rot=w=>{const x=(w.x-o.leak.x)*k,y=(w.y-o.leak.y)*k;return{x:Dm/2+x*cs-y*sn,y:Dm/2+x*sn+y*cs};};
+  o.R3={R,c:Dm/2,u:ppm*k,leak:{x:Dm/2,y:Dm/2},A:rot(o.A),B:rot(o.B)};return o.R3;
+}
+function sim3D(t,alpha){
+  const o=SIMD,G3=simGround(o),c=sc2,u=G3.u,cx=G3.c;
+  const e=sease(sseg(t,40.3,45.5)),distM=slerp(150,30,e),hM=slerp(75,8.5,e),yH=slerp(130,292,e),f=860;
+  const sway=t>45.5?Math.sin((t-45.5)*0.9)*1.2*u:0,C={x:cx+sway,y:cx+distM*u},h=hM*u;
+  c.save();c.setTransform(1,0,0,1,0,0);c.globalAlpha=alpha;
+  const sky=c.createLinearGradient(0,0,0,yH);sky.addColorStop(0,'#5f9fe0');sky.addColorStop(1,'#d7e8f5');c.fillStyle=sky;c.fillRect(0,0,SW,yH+2);
+  c.imageSmoothingEnabled=true;
+  for(let y=Math.ceil(yH)+1;y<SH;y++){const z=h*f/(y-yH);if(z>1600*u)continue;const half=(SW/2)*z/f;c.drawImage(G3.R,C.x-half,C.y-z,2*half,1,0,y,SW,1);}
+  const fog=c.createLinearGradient(0,yH,0,yH+110);fog.addColorStop(0,'rgba(215,232,245,1)');fog.addColorStop(1,'rgba(215,232,245,0)');c.fillStyle=fog;c.fillRect(0,yH,SW,110);
+  const proj=P=>{const dz=C.y-P.y;if(dz<4*u)return null;return{x:SW/2+(P.x-C.x)*f/dz,y:yH+h*f/dz,s:f/dz};};
+  const pin=(P,hm,col,lbl,big)=>{const q=proj(P);if(!q||q.x<-200||q.x>SW+200)return;const hp=hm*u*q.s,r=Math.max(big?16:10,Math.min(big?46:26,hp*.2));
+    c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=Math.max(2,r*.25);c.beginPath();c.ellipse(q.x,q.y,r*.9,r*.9*(h/(C.y-P.y)),0,0,7);c.stroke();
+    c.strokeStyle='#fff';c.lineWidth=Math.max(2.5,r*.22);c.beginPath();c.moveTo(q.x,q.y);c.lineTo(q.x,q.y-hp);c.stroke();
+    c.fillStyle=col;c.strokeStyle='#fff';c.lineWidth=Math.max(2,r*.16);c.beginPath();c.arc(q.x,q.y-hp,r,0,7);c.fill();c.stroke();
+    if(big){c.fillStyle=Math.floor(t*2)%2?'#000':'#fff';c.font=`900 ${r*1.2}px ${SHEAD}`;c.textAlign='center';c.textBaseline='middle';c.fillText('!',q.x,q.y-hp+1);c.textBaseline='alphabetic';}
+    c.font=`800 ${Math.max(12,Math.min(22,r*.75))}px ${SHEAD}`;const tw=c.measureText(lbl).width+18,th2=Math.max(22,Math.min(36,r*1.15));
+    srr(c,q.x-tw/2,q.y-hp-r-th2-8,tw,th2,th2/2);c.fillStyle=big?'rgba(185,28,28,.95)':'rgba(109,40,217,.95)';c.fill();c.strokeStyle='#fff';c.lineWidth=2;c.stroke();
+    c.fillStyle='#fff';c.textAlign='center';c.textBaseline='middle';c.fillText(lbl,q.x,q.y-hp-r-th2/2-8);c.textAlign='left';c.textBaseline='alphabetic';return q;};
+  // pulsing rings on the ground at the leak
+  const ql=proj(G3.leak);
+  if(ql){for(let n=0;n<3;n++){const fr=((t-40)/1.8+n/3)%1,rm=(1.5+fr*9)*u*ql.s;c.strokeStyle=`rgba(239,68,68,${(1-fr)*.95})`;c.lineWidth=3;c.beginPath();c.ellipse(ql.x,ql.y,rm,rm*(h/(C.y-G3.leak.y)),0,0,7);c.stroke();}}
+  pin(G3.A,4,COL.sensor,o.Alab,false);pin(G3.B,4,COL.sensor,o.Blab,false);
+  const bl=Math.floor(t*2)%2===0;pin(G3.leak,7,bl?'#ef4444':'#fde047','💧 '+tr('sim3dLabel'),true);
+  c.restore();
 }
 function simPanels(t){
   const o=SIMD,c=sc2;
@@ -1940,11 +2044,11 @@ function simPanels(t){
     stxt(`${o.r.lat.toFixed(6)}, ${o.r.lng.toFixed(6)}`,x+22,y+78,21,'#fff',700,SMONO);
     if(o.lk.road)stxt('🛣 '+o.lk.road,x+22,y+108,15,'#d8e2e0',600);
     stxt(`${fmt(o.raw)} ${tr('simFrom',o.refLab)} · ${tr('simTol')} ± ${o.lk.tol} m`,x+22,y+138,14,'#8ea3ae',600);c.restore();}
-  if(t>=38.4){const a=sseg(t,38.4,39),w=460,x=(SW-w)/2,y=SH-150;c.save();c.globalAlpha=a;srr(c,x,y,w,58,29);c.fillStyle='#16a34a';c.fill();
+  if(t>=38.4&&t<40.6){const a=sseg(t,38.4,39)*(1-sseg(t,40,40.6)),w=460,x=(SW-w)/2,y=SH-150;c.save();c.globalAlpha=a;srr(c,x,y,w,58,29);c.fillStyle='#16a34a';c.fill();
     c.fillStyle='#0e5e2d';c.fillRect(x+20,y+58,w-40,0);stxt(tr('simFound'),SW/2,y+38,22,'#fff',800,SHEAD,'center');c.restore();}
   if(t>=2.6){let i=0;SCH.forEach((v,k)=>{if(t>=v)i=k;});const a=sseg(t,2.6,3.2);c.save();c.globalAlpha=a;
     const g=c.createLinearGradient(0,SH-90,0,SH);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.78)');c.fillStyle=g;c.fillRect(0,SH-90,SW,90);
-    stxt(`${i+1}/9`,26,SH-28,14,'#4ade80',700,SMONO);stxt(tr('simCap')[i](simCapData(o)),72,SH-28,19,'#fff',600);c.restore();}
+    stxt(`${i+1}/${SCH.length}`,26,SH-28,14,'#4ade80',700,SMONO);stxt(tr('simCap')[i](simCapData(o)),72,SH-28,19,'#fff',600);c.restore();}
   c.fillStyle='rgba(255,255,255,.15)';c.fillRect(0,SH-4,SW,4);c.fillStyle='#22c55e';c.fillRect(0,SH-4,SW*t/SDUR,4);
 }
 function simLoop(ts){
@@ -1956,6 +2060,7 @@ function simLoop(ts){
   $('simTm').textContent=`${simT.toFixed(1)} / ${SDUR.toFixed(1)} s`;
   if(!$('simModal').hidden)simRAF=requestAnimationFrame(simLoop);
 }
+$('simSV').onclick=()=>{if(SIMD)showStreetView(SIMD.lk);};
 $('simPlay').onclick=()=>{if(simT>=SDUR)simT=0;simPlaying=!simPlaying;};
 $('simRe').onclick=()=>{simT=0;simPlaying=true;};
 $('simScrub').oninput=e=>{simT=+e.target.value;};
@@ -2171,20 +2276,23 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('libDrawer').clas
 
 /* ================= mobile sheet, mode bar, native app ================= */
 const isMobile=()=>window.matchMedia('(max-width:760px)').matches;
-let sheetState='half';
-function setSheet(st){sheetState=st;const h=st==='peek'?'calc(60px + env(safe-area-inset-bottom,0px))':st==='full'?'92vh':'46vh';document.documentElement.style.setProperty('--sheet',h);
-  $('sheetBtn').textContent=st==='full'?'⬇':'⬆';document.documentElement.classList.toggle('sheet-full',st==='full');if(st==='peek')$('side').scrollTop=0;}
-$('sheetBtn').onclick=e=>{e.stopPropagation();setSheet(sheetState==='full'?'peek':sheetState==='half'?'full':'half');};
-(()=>{let y0=null,h0=0,moved=false;const bar=$('sheetBar'),side=$('side');
-  bar.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;y0=e.clientY;h0=side.getBoundingClientRect().height;moved=false;side.classList.add('dragging');bar.setPointerCapture(e.pointerId);});
-  bar.addEventListener('pointermove',e=>{if(y0==null)return;const dy=y0-e.clientY;if(Math.abs(dy)>4)moved=true;document.documentElement.style.setProperty('--sheet',Math.max(90,Math.min(window.innerHeight*.94,h0+dy))+'px');});
-  const end=e=>{if(y0==null)return;side.classList.remove('dragging');const h=side.getBoundingClientRect().height,vh=window.innerHeight;y0=null;
-    if(!moved){setSheet(sheetState==='peek'?'half':sheetState==='half'?'full':'peek');return;}
-    setSheet(h<vh*.22?'peek':h<vh*.7?'half':'full');};
-  bar.addEventListener('pointerup',end);bar.addEventListener('pointercancel',end);})();
+let sheetState='half',curPnl=null,pnlBeforeMode=null;
+const PCOL={1:'#3b82f6',2:'#8b5cf6',3:'#06b6d4',4:'#ef4444',5:'#22c55e'};
+function openPnl(n){n=+n;curPnl=n;$('pnlWrap').hidden=false;for(let i=1;i<=5;i++)$('pnl'+i).hidden=i!==n;
+  $('pnlTitle').textContent=t('p'+n);$('pnlWrap').style.setProperty('--pc',PCOL[n]);$('pnlBody').scrollTop=0;
+  document.querySelectorAll('.fstep').forEach(b=>b.classList.toggle('on',+b.dataset.pnl===n));
+  $('pnlPrev').hidden=n===1;$('pnlNext').hidden=n===5;$('pnlNext').textContent=t('next');}
+function closePnl(){curPnl=null;$('pnlWrap').hidden=true;document.querySelectorAll('.fstep').forEach(b=>b.classList.remove('on'));}
+function setSheet(st){if(st==='peek'&&isMobile())closePnl();}
+$('flow').addEventListener('click',e=>{const b=e.target.closest('.fstep');if(!b)return;+b.dataset.pnl===curPnl?closePnl():openPnl(b.dataset.pnl);});
+$('pnlX').onclick=closePnl;$('pnlPrev').onclick=()=>curPnl>1&&openPnl(curPnl-1);$('pnlNext').onclick=()=>curPnl<5&&openPnl(curPnl+1);
+function updateFlow(){
+  $('fc1').textContent=IMG?'✓':'';$('fc2').textContent=S.sensors.length||'';$('fc3').textContent=(S.groups||[]).length||'';$('fc4').textContent=S.leaks.length||'';
+  $('fc5').textContent=($('projName').value||'').trim()?'✓':'';
+}
 $('modeBar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.mb;
   if(a==='undo'){draft.pop();draw();}else if(a==='done')finishPipe();else if(a==='refundo')refUndo();else if(a==='refdone')refEnd(true);else if(a==='refcancel')refEnd(false);else setMode(null);});
-setSheet('half');
+if(!isMobile())openPnl(1);
 const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
 async function saveBlob(blob,name){
   const C=window.Capacitor,P=C&&C.Plugins;
@@ -2210,13 +2318,55 @@ if(NATIVE){
     if(!$('cropModal').hidden){$('cropX').click();return;}
     if($('libDrawer').classList.contains('open')){libOpenDrawer(false);return;}
     if(mode){if(mode==='pipe')finishPipe();else if(mode==='ref')refEnd(false);else setMode(null);return;}
-    if(isMobile()&&sheetState==='full'){setSheet('half');return;}
+    if(curPnl){closePnl();return;}
     App.exitApp();
   });
 }
 
 $('gKey').value=gKey();$('gKeyMsg').textContent=gKey()?'':t('gNone');
 $('gKeySave').onclick=()=>{const k=$('gKey').value.trim();try{localStorage.setItem('poi-gkey',k);}catch(e){}$('gKeyMsg').textContent=k?'…':t('gNone');setupGoogle();};
+/* ================= loggers from Excel / CSV ================= */
+async function loadXLSX(){if(!window.XLSX)await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');return window.XLSX;}
+$('btnXlsTpl').onclick=async()=>{
+  try{const X=await loadXLSX();
+    const rows=LANG==='en'?[['Logger name','Description','Latitude','Longitude','Group']]:[['Nama logger','Keterangan','Latitude','Longitude','Kumpulan']];
+    rows.push(['MY07-0001','Injap Jalan Tun Sambanthan',4.597512,101.078230,'Link 1'],['MY07-0003','Injap Hala Timah',4.598420,101.077610,'Link 1'],['MY07-0005','Hidran Jalan Bandar Timah',4.596880,101.079540,'Link 2'],['MY07-0006','Injap Jalan Panglima',4.596110,101.080310,'Link 2']);
+    const ws=X.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:14},{wch:30},{wch:12},{wch:12},{wch:10}];
+    const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Logger');
+    const out=X.write(wb,{bookType:'xlsx',type:'array'});
+    saveBlob(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),LANG==='en'?'logger-template.xlsx':'templat-logger.xlsx');
+  }catch(e){$('xlsMsg').textContent=t('xlsBad');}
+};
+$('btnXlsImp').onclick=()=>$('xlsIn').click();
+$('xlsIn').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;e.target.value='';$('xlsMsg').textContent=t('xlsLoad');
+  try{
+    const X=await loadXLSX(),wb=X.read(await f.arrayBuffer(),{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]];
+    const rows=X.utils.sheet_to_json(ws,{header:1,defval:'',raw:true}).filter(r=>r.some(c=>String(c).trim()!==''));
+    const hi=rows.findIndex(r=>r.some(c=>/^\s*lat(itude)?\b/i.test(String(c)))||r.some(c=>/^\s*(koordinat|coord)/i.test(String(c))));if(hi<0)throw 0;
+    const H=rows[hi].map(c=>String(c).trim().toLowerCase()),col=re=>H.findIndex(h=>re.test(h));
+    const cL=col(/^(nama|name|label|logger|id|no)/),cN=col(/keterangan|lokasi|location|desc|remark|nota|note/),cLa=col(/^lat/),cLo=col(/^(lng|lon|long)/),cC=col(/koordinat|coord/),cG=col(/kumpulan|group|link/);
+    if(cL<0||((cLa<0||cLo<0)&&cC<0))throw 0;
+    let added=0,upd=0,skip=0;const byGroup={};
+    rows.slice(hi+1).forEach(r=>{
+      const lbl=String(r[cL]).trim();let lat,lng;
+      if(cLa>=0&&cLo>=0){lat=parseFloat(String(r[cLa]).replace(',','.'));lng=parseFloat(String(r[cLo]).replace(',','.'));}
+      if((isNaN(lat)||isNaN(lng))&&cC>=0){const ll=parseLL(r[cC]);if(ll){lat=ll.lat;lng=ll.lng;}}
+      if(!lbl||isNaN(lat)||isNaN(lng)||Math.abs(lat)>90||Math.abs(lng)>180){skip++;return;}
+      const name=cN>=0?String(r[cN]).trim():'';let se=S.sensors.find(x=>x.label===lbl);
+      if(se){se.lat=lat;se.lng=lng;if(name)se.name=name;se.free=true;upd++;}
+      else{se={id:uid(),label:lbl,name,lat,lng,free:true};S.sensors.push(se);added++;}
+      const gn=cG>=0?String(r[cG]).trim():'';if(gn)(byGroup[gn]=byGroup[gn]||[]).push(se.id);
+    });
+    let gmade=0;S.groups=S.groups||[];
+    Object.entries(byGroup).forEach(([gn,ids])=>{if(ids.length<2)return;const [a,b]=ids;
+      if(S.groups.some(g=>(g.a===a&&g.b===b)||(g.a===b&&g.b===a)))return;const g=newGroup(a,b);g.name=gn;gmade++;});
+    save();draw();
+    $('xlsMsg').textContent=t('xlsDone',added,upd,skip,gmade);
+    const bb=L.latLngBounds([]);S.sensors.forEach(x=>bb.extend([x.lat,x.lng]));if(bb.isValid())map.fitBounds(bb,{padding:[60,60],maxZoom:18});
+  }catch(err){console.error(err);$('xlsMsg').textContent=t('xlsBad');}
+};
+
 /* ================= sensor groups (links) ================= */
 const GPAL=['#f59e0b','#06b6d4','#ec4899','#84cc16','#f97316','#a78bfa','#14b8a6','#eab308'];
 const groupById=id=>(S.groups||[]).find(g=>g.id===id);
@@ -2473,7 +2623,7 @@ async function routeClick(latlng){
 }
 
 /* ================= align plan with reference point pairs ================= */
-let REF=null;const refLayer=L.layerGroup().addTo(map);
+let REF=null,editSen=null,selSen=null,delSen=null;const refLayer=L.layerGroup().addTo(map);
 function pixToLayer(x,y){const k=corners();return{x:k[0].x+(k[1].x-k[0].x)*x/IMG.w+(k[3].x-k[0].x)*y/IMG.h,y:k[0].y+(k[1].y-k[0].y)*x/IMG.w+(k[3].y-k[0].y)*y/IMG.h};}
 function layerToPix(q){const k=corners(),ax=(k[1].x-k[0].x)/IMG.w,ay=(k[1].y-k[0].y)/IMG.w,bx=(k[3].x-k[0].x)/IMG.h,by=(k[3].y-k[0].y)/IMG.h,dx=q.x-k[0].x,dy=q.y-k[0].y,det=ax*by-ay*bx;
   return{x:(dx*by-dy*bx)/det,y:(ax*dy-ay*dx)/det};}
